@@ -416,8 +416,6 @@ nav {
 /* Scrollbar */
 ::-webkit-scrollbar { width: 0; height: 0; }
 
-/* Datalist */
-datalist { display: none; }
 
 /* ── LOGO ── */
 .app-logo {
@@ -644,10 +642,16 @@ datalist { display: none; }
           <button class="type-btn lend" id="typeLend" onclick="setType('lend')">📥 I Lent</button>
         </div>
       </div>
-      <div class="field">
+      <div class="field" style="position:relative;">
         <label>Person</label>
-        <input type="text" id="txPerson" list="contactsList" placeholder="Name…" autocomplete="off">
-        <datalist id="contactsList"></datalist>
+        <input type="text" id="txPerson" placeholder="Type to search contacts…" autocomplete="off"
+          oninput="filterContactDropdown()" onfocus="filterContactDropdown()" onblur="hideContactDropdown()">
+        <div id="contactDropdown" style="
+          display:none; position:absolute; left:0; right:0; top:100%; z-index:999;
+          background:var(--surface3); border:1px solid var(--border2); border-radius:var(--radius-sm);
+          max-height:180px; overflow-y:auto; margin-top:4px;
+          box-shadow:0 8px 24px rgba(0,0,0,0.4);
+        "></div>
       </div>
       <div class="amount-row">
         <div class="field">
@@ -917,22 +921,21 @@ function renderDashboard() {
 
   if (oweCurs.length===0) {
     document.getElementById('totalOwe').textContent = '0.00';
-    document.getElementById('totalOweCurrencies').textContent = 'Nothing owed';
+    document.getElementById('totalOweCurrencies').textContent = 'all clear';
   } else if (oweCurs.length===1) {
     document.getElementById('totalOwe').textContent = `${oweCurs[0]} ${fmt(oweMap[oweCurs[0]])}`;
-    document.getElementById('totalOweCurrencies').textContent = 'in 1 currency';
+    document.getElementById('totalOweCurrencies').textContent = oweCurs[0];
   } else {
-    // Just show count
     document.getElementById('totalOwe').textContent = `${oweCurs.length} currencies`;
     document.getElementById('totalOweCurrencies').textContent = oweCurs.map(c=>`${c} ${fmt(oweMap[c])}`).join(' · ');
   }
 
   if (owedCurs.length===0) {
     document.getElementById('totalOwed').textContent = '0.00';
-    document.getElementById('totalOwedCurrencies').textContent = 'Nothing owed to you';
+    document.getElementById('totalOwedCurrencies').textContent = 'all clear';
   } else if (owedCurs.length===1) {
     document.getElementById('totalOwed').textContent = `${owedCurs[0]} ${fmt(owedMap[owedCurs[0]])}`;
-    document.getElementById('totalOwedCurrencies').textContent = 'in 1 currency';
+    document.getElementById('totalOwedCurrencies').textContent = owedCurs[0];
   } else {
     document.getElementById('totalOwed').textContent = `${owedCurs.length} currencies`;
     document.getElementById('totalOwedCurrencies').textContent = owedCurs.map(c=>`${c} ${fmt(owedMap[c])}`).join(' · ');
@@ -1104,6 +1107,7 @@ function openAddTransaction() {
   txType = 'borrow';
   setType('borrow');
   document.getElementById('txPerson').value = '';
+  document.getElementById('contactDropdown').style.display = 'none';
   document.getElementById('txAmount').value = '';
   document.getElementById('txCurrency').value = 'AED';
   document.getElementById('txDate').value = today();
@@ -1120,6 +1124,7 @@ function editTx(id) {
   txType = tx.type;
   setType(tx.type);
   document.getElementById('txPerson').value = tx.person;
+  document.getElementById('contactDropdown').style.display = 'none';
   document.getElementById('txAmount').value = tx.amount;
   document.getElementById('txCurrency').value = tx.currency;
   document.getElementById('txDate').value = tx.date;
@@ -1330,8 +1335,7 @@ function renderContacts() {
 }
 
 function updateContactsDatalist() {
-  const dl = document.getElementById('contactsList');
-  dl.innerHTML = contacts.map(c=>`<option value="${escAttr(c.name)}">`).join('');
+  // Contacts now served via custom filterContactDropdown() — no datalist needed
 }
 
 // ══════════════════════════════════════════════
@@ -1434,10 +1438,66 @@ function escAttr(str) { return escHtml(str); }
 // ══════════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════════
+// ══════════════════════════════════════════════
+//  CUSTOM CONTACT AUTOCOMPLETE DROPDOWN
+// ══════════════════════════════════════════════
+let dropdownHideTimer = null;
+
+function filterContactDropdown() {
+  const input = document.getElementById('txPerson');
+  const dd = document.getElementById('contactDropdown');
+  const q = input.value.toLowerCase().trim();
+
+  const matches = contacts
+    .filter(c => !q || c.name.toLowerCase().includes(q))
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .slice(0, 8);
+
+  if (matches.length === 0) { dd.style.display = 'none'; return; }
+
+  dd.innerHTML = matches.map(c => `
+    <div onmousedown="selectContact('${escAttr(c.name)}')" style="
+      display:flex; align-items:center; gap:10px; padding:11px 14px;
+      cursor:pointer; border-bottom:1px solid var(--border);
+      transition:background 0.1s;
+    " ontouchstart="this.style.background='var(--surface2)'"
+       ontouchend="this.style.background=''"
+       onmouseover="this.style.background='var(--surface2)'"
+       onmouseout="this.style.background=''">
+      <div style="width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),#5b4fd4);
+        display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;flex-shrink:0;">
+        ${initials(c.name)}
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:500;">${escHtml(c.name)}</div>
+        ${c.phone ? `<div style="font-size:11px;color:var(--text2);">${escHtml(c.phone)}</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+
+  dd.style.display = 'block';
+}
+
+function selectContact(name) {
+  document.getElementById('txPerson').value = name;
+  document.getElementById('contactDropdown').style.display = 'none';
+}
+
+function hideContactDropdown() {
+  // Small delay so onmousedown/ontouchstart fires first
+  dropdownHideTimer = setTimeout(() => {
+    const dd = document.getElementById('contactDropdown');
+    if (dd) dd.style.display = 'none';
+  }, 200);
+}
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
 function init() {
   updateContactsDatalist();
   renderDashboard();
-  // Set today's date as default
+  renderTransactions();
   document.getElementById('txDate').value = today();
 }
 
