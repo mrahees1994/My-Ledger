@@ -54,15 +54,15 @@ html, body {
   padding-top: var(--safe-top);
 }
 
-/* ── PAGES ── */
 .page {
   flex: 1; overflow-y: auto; overflow-x: hidden;
   padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px);
-  display: none; flex-direction: column;
+  display: none;
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
+  min-height: 0;
 }
-.page.active { display: flex; }
+.page.active { display: block; }
 
 /* ── BOTTOM NAV ── */
 nav {
@@ -124,6 +124,7 @@ nav {
   border: 1px solid var(--border2);
   border-radius: var(--radius-lg); padding: 24px 22px 20px;
   position: relative; overflow: hidden;
+  min-height: 140px;
 }
 .balance-hero::before {
   content: ''; position: absolute; top: -60px; right: -60px;
@@ -132,15 +133,16 @@ nav {
   pointer-events: none;
 }
 .balance-label { font-size: 12px; font-weight: 500; color: var(--text2); letter-spacing: 0.08em; text-transform: uppercase; }
-.balance-row { display: flex; gap: 16px; margin-top: 16px; }
-.balance-item { flex: 1; }
+.balance-row { display: flex; gap: 16px; margin-top: 16px; width: 100%; }
+.balance-item { flex: 1; min-width: 0; }
 .balance-amount {
-  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; font-size: 22px; font-weight: 700;
+  font-size: 20px; font-weight: 700;
   letter-spacing: -0.5px; line-height: 1.2; margin-top: 4px;
+  word-break: break-word;
 }
 .balance-item.owe .balance-amount { color: var(--red); }
 .balance-item.owed .balance-amount { color: var(--green); }
-.balance-mini-label { font-size: 11px; color: var(--text3); margin-top: 3px; }
+.balance-mini-label { font-size: 11px; color: var(--text3); margin-top: 3px; word-break: break-word; }
 
 .currency-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
 .currency-pill {
@@ -408,9 +410,9 @@ nav {
 .badge.partial { background: var(--amber-bg); color: var(--amber); }
 
 /* ── STAT GRID ── */
-.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 16px 12px; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 16px 12px; width: calc(100% - 32px); }
 .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
-.stat-card .s-val { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; font-size: 22px; font-weight: 700; margin-top: 6px; }
+.stat-card .s-val { font-size: 22px; font-weight: 700; margin-top: 6px; }
 .stat-card .s-label { font-size: 11px; color: var(--text2); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
 
 /* Scrollbar */
@@ -1496,12 +1498,15 @@ function hideContactDropdown() {
 // ══════════════════════════════════════════════
 function init() {
   updateContactsDatalist();
-  renderDashboard();
-  renderTransactions();
+  // Use rAF so DOM is fully painted before we inject content
+  requestAnimationFrame(() => {
+    renderDashboard();
+    renderTransactions();
+  });
   document.getElementById('txDate').value = today();
 }
 
-init();
+document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
