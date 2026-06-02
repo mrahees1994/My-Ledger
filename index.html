@@ -646,22 +646,8 @@ datalist { display: none; }
       </div>
       <div class="field">
         <label>Person</label>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <div style="flex:1;position:relative;">
-            <input type="text" id="txPerson" list="contactsList" placeholder="Type or pick a name…" autocomplete="off" style="width:100%;">
-            <datalist id="contactsList"></datalist>
-          </div>
-          <button type="button" id="phoneContactBtn" onclick="pickPhoneContact()" title="Import from phone contacts"
-            style="flex-shrink:0;width:46px;height:46px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color 0.2s;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          </button>
-        </div>
-        <div id="contactPickerHint" style="font-size:11px;color:var(--text3);margin-top:6px;display:none;">
-          📱 Tap the icon to pick from your iPhone contacts
-        </div>
-        <div id="contactPickerUnsupported" style="font-size:11px;color:var(--text3);margin-top:6px;display:none;">
-          ⚠️ Contact picker requires iOS 14.5+ Safari. Type the name manually or add to in-app contacts.
-        </div>
+        <input type="text" id="txPerson" list="contactsList" placeholder="Name…" autocomplete="off">
+        <datalist id="contactsList"></datalist>
       </div>
       <div class="amount-row">
         <div class="field">
@@ -764,21 +750,6 @@ datalist { display: none; }
     </div>
     <div class="modal-body">
       <input type="hidden" id="editContactId">
-
-      <!-- Phone contact import button — shown only when adding new -->
-      <div id="phoneImportRow" style="margin-bottom:16px;">
-        <button type="button" onclick="pickPhoneContactForContacts()"
-          style="width:100%;padding:13px;border-radius:var(--radius);background:var(--surface2);border:1px solid var(--accent);color:var(--accent2);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          Import from iPhone Contacts
-        </button>
-        <div style="display:flex;align-items:center;gap:10px;margin:14px 0;">
-          <div style="flex:1;height:1px;background:var(--border)"></div>
-          <span style="font-size:12px;color:var(--text3);">or enter manually</span>
-          <div style="flex:1;height:1px;background:var(--border)"></div>
-        </div>
-      </div>
-
       <div class="field">
         <label>Full Name</label>
         <input type="text" id="contactName" placeholder="e.g. Ahmed Al-Rashidi">
@@ -1281,14 +1252,11 @@ function openAddContact(id) {
     document.getElementById('editContactId').value = c.id;
     document.getElementById('contactName').value = c.name;
     document.getElementById('contactPhone').value = c.phone||'';
-    document.getElementById('phoneImportRow').style.display = 'none';
   } else {
     document.getElementById('addContactTitle').textContent = 'New Contact';
     document.getElementById('editContactId').value = '';
     document.getElementById('contactName').value = '';
     document.getElementById('contactPhone').value = '';
-    // Show phone import row only if API is supported
-    document.getElementById('phoneImportRow').style.display = isContactPickerSupported() ? 'block' : 'none';
   }
   openModal('addContactModal');
 }
@@ -1469,96 +1437,8 @@ function escAttr(str) { return escHtml(str); }
 function init() {
   updateContactsDatalist();
   renderDashboard();
+  // Set today's date as default
   document.getElementById('txDate').value = today();
-  // Show correct hint based on Contact Picker API support
-  if ('contacts' in navigator && 'ContactsManager' in window) {
-    document.getElementById('contactPickerHint').style.display = 'block';
-  } else {
-    document.getElementById('contactPickerUnsupported').style.display = 'block';
-    document.getElementById('phoneContactBtn').style.opacity = '0.4';
-    document.getElementById('phoneContactBtn').style.cursor = 'not-allowed';
-  }
-}
-
-// ══════════════════════════════════════════════
-//  CONTACT PICKER API
-// ══════════════════════════════════════════════
-
-// Check if Contact Picker API is available
-function isContactPickerSupported() {
-  return ('contacts' in navigator && 'ContactsManager' in window);
-}
-
-// Pick a contact for the Transaction "Person" field
-async function pickPhoneContact() {
-  if (!isContactPickerSupported()) {
-    toast('⚠️ Contact picker needs iOS 14.5+ Safari');
-    return;
-  }
-  try {
-    const props = ['name', 'tel'];
-    const opts  = { multiple: false };
-    const results = await navigator.contacts.select(props, opts);
-    if (!results || results.length === 0) return; // user cancelled
-    const contact = results[0];
-    const name = (contact.name && contact.name[0]) ? contact.name[0].trim() : '';
-    const phone = (contact.tel && contact.tel[0]) ? contact.tel[0].trim() : '';
-    if (!name) { toast('⚠️ No name found for that contact'); return; }
-    document.getElementById('txPerson').value = name;
-    // Auto-save to in-app contacts if not already there
-    if (!contacts.find(c => c.name.toLowerCase() === name.toLowerCase())) {
-      contacts.push({ id: uid(), name, phone, createdAt: Date.now() });
-      save();
-      updateContactsDatalist();
-      toast(`✅ "${name}" picked & saved to contacts`);
-    } else {
-      toast(`✅ "${name}" selected`);
-    }
-  } catch (err) {
-    if (err.name === 'SecurityError') {
-      toast('⚠️ Open app from Home Screen to use contacts');
-    } else if (err.name !== 'AbortError') {
-      toast('⚠️ Could not access contacts: ' + err.message);
-    }
-  }
-}
-
-// Pick one or more contacts from the Contacts page modal
-async function pickPhoneContactForContacts() {
-  if (!isContactPickerSupported()) {
-    toast('⚠️ Contact picker needs iOS 14.5+ Safari');
-    return;
-  }
-  try {
-    const props = ['name', 'tel'];
-    const opts  = { multiple: true };
-    const results = await navigator.contacts.select(props, opts);
-    if (!results || results.length === 0) return; // cancelled
-    let added = 0;
-    results.forEach(contact => {
-      const name  = (contact.name && contact.name[0]) ? contact.name[0].trim() : '';
-      const phone = (contact.tel  && contact.tel[0])  ? contact.tel[0].trim()  : '';
-      if (!name) return;
-      if (contacts.find(c => c.name.toLowerCase() === name.toLowerCase())) return; // skip duplicate
-      contacts.push({ id: uid(), name, phone, createdAt: Date.now() });
-      added++;
-    });
-    if (added > 0) {
-      save();
-      updateContactsDatalist();
-      renderContacts();
-      closeModal('addContactModal');
-      toast(`✅ ${added} contact${added !== 1 ? 's' : ''} imported`);
-    } else {
-      toast('ℹ️ All selected contacts already exist');
-    }
-  } catch (err) {
-    if (err.name === 'SecurityError') {
-      toast('⚠️ Open app from Home Screen to use contacts');
-    } else if (err.name !== 'AbortError') {
-      toast('⚠️ Could not access contacts: ' + err.message);
-    }
-  }
 }
 
 init();
