@@ -380,8 +380,11 @@ nav {
 }
 .search-wrap input:focus { outline: none; border-color: var(--accent); }
 .search-icon {
-  position: absolute; left: 28px; top: 50%; transform: translateY(-50%);
+  position: absolute; left: 40px;
+  top: 0; height: calc(100% - 12px); /* 12px = search-wrap padding-bottom */
+  display: flex; align-items: center;
   color: var(--text3); pointer-events: none;
+  z-index: 1;
 }
 
 /* ── PARTIAL SETTLE ── */
@@ -886,6 +889,8 @@ nav {
   padding-right: 20px;
 }
 
+.search-wrap .search-icon { left: 32px; }
+
 .sub-tabs {
   background: rgba(255,255,255,0.035);
   border: 1px solid rgba(255,255,255,0.07);
@@ -1127,7 +1132,7 @@ body {
 }
 
 .page {
-  padding: 10px 0 calc(var(--nav-h) + var(--safe-bottom) + 52px);
+  padding: 10px 0 calc(90px + var(--safe-bottom));
 }
 
 .dash-header,
@@ -1425,6 +1430,8 @@ body {
   padding-right: 28px;
 }
 
+.search-wrap .search-icon { left: 40px; }
+
 .search-wrap input {
   background: #ffffff !important;
   border: none;
@@ -1599,15 +1606,16 @@ body {
 }
 
 nav {
-  width: min(calc(100% - 56px), 464px);
-  bottom: calc(16px + var(--safe-bottom));
-  height: 62px;
-  padding: 7px 12px;
+  width: min(100%, 520px);
+  bottom: 0;
+  height: auto;
+  padding: 8px 12px calc(8px + var(--safe-bottom));
   align-items: center;
   border: none;
-  border-radius: 24px;
-  background: rgba(255,255,255,0.88);
-  box-shadow: 0 18px 44px rgba(35,48,76,0.16);
+  border-radius: 20px 20px 0 0;
+  background: #ffffff;
+  box-shadow: 0 -4px 20px rgba(35,48,76,0.10), 0 -1px 0 rgba(17,31,61,0.05);
+  z-index: 200;
 }
 
 .nav-btn {
@@ -1633,17 +1641,18 @@ nav {
 }
 
 .nav-center-btn {
-  width: 58px;
-  height: 58px;
-  margin-top: -32px;
-  border: 6px solid rgba(255,255,255,0.9);
+  width: 52px;
+  height: 52px;
+  margin-top: -22px;
+  border: 5px solid var(--bg);
+  box-shadow: 0 4px 16px rgba(109,53,255,0.35);
 }
 
 #toast {
   background: var(--text);
   color: #ffffff;
   border: none;
-  bottom: calc(var(--nav-h) + var(--safe-bottom) + 34px);
+  bottom: calc(88px + var(--safe-bottom));
 }
 
 body[data-theme="dark"] {
@@ -1739,8 +1748,8 @@ body[data-theme="dark"] .filter-chip.active {
 }
 
 body[data-theme="dark"] nav {
-  background: rgba(21,27,39,0.9);
-  box-shadow: 0 18px 44px rgba(0,0,0,0.34);
+  background: #0b0f19;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.4), 0 -1px 0 rgba(255,255,255,0.06);
 }
 
 button:focus-visible,
@@ -1861,7 +1870,7 @@ textarea:focus-visible,
       <div class="dfh-bar-wrap" id="dashSavingsBarWrap">
         <div class="dfh-bar-label">
           <span>Savings Rate</span>
-          <span id="dashSavingsRate" style="color:var(--accent2);font-weight:700;">0%</span>
+          <span id="dashSavingsRate" style="color:#ffffff;font-weight:800;text-shadow:0 1px 4px rgba(0,0,0,0.2);">0%</span>
         </div>
         <div class="dfh-bar-track">
           <div class="dfh-bar-fill" id="dashSavingsBar" style="width:0%"></div>
@@ -1940,7 +1949,6 @@ textarea:focus-visible,
     <!-- Recent Activity -->
     <div class="dash-section-row">
       <div class="dash-section-title">Recent Activity</div>
-      <button class="dash-see-all" onclick="openAllActivity()">See all →</button>
     </div>
     <div id="recentList"></div>
 
@@ -2299,15 +2307,10 @@ textarea:focus-visible,
     </div>
     <div class="modal-body">
       <input type="hidden" id="newCatType">
-      <div class="amount-row">
-        <div class="field" style="flex:0 0 76px;">
-          <label>Emoji</label>
-          <input type="text" id="newCatEmoji" placeholder="📦" maxlength="4" style="text-align:center;font-size:20px;">
-        </div>
-        <div class="field" style="flex:1;">
-          <label>Name</label>
-          <input type="text" id="newCatName" placeholder="e.g. Pets, Subscriptions">
-        </div>
+      <input type="hidden" id="newCatEmoji">
+      <div class="field">
+        <label>Category Name</label>
+        <input type="text" id="newCatName" placeholder="e.g. Pets, Subscriptions">
       </div>
       <button class="btn-primary" onclick="saveCustomCategory()">Add Category</button>
       <div style="height:12px"></div>
@@ -2762,15 +2765,14 @@ function confirmAction(title, msg, cb) {
 }
 
 function getFinCatEmoji(cat) {
-  // Categories are stored as "🍔 Food" — extract the emoji
-  const match = String(cat||'').match(/^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)/u);
-  if (match) return match[0];
-  // Fallback map for plain strings
-  const map = { income:'💰', salary:'💼', freelance:'🧑‍💻', business:'🏢', gift:'🎁',
+  const plain = String(cat||'').replace(/^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)\s*/u,'').trim().toLowerCase();
+  const map = {
+    income:'💰', salary:'💼', freelance:'🧑‍💻', business:'🏢', gift:'🎁', rental:'🏘️', investment:'📊',
     food:'🍔', transport:'🚗', housing:'🏠', health:'💊', shopping:'👕',
     bills:'📱', education:'🎓', travel:'✈️', family:'👨‍👩‍👧', charity:'🕌',
-    entertainment:'🎮', other:'📦', expense:'📉', remittance:'🔄', rental:'🏘️', investment:'📊' };
-  return map[String(cat||'').toLowerCase().split(' ').pop()] || '💰';
+    entertainment:'🎮', other:'📦', expense:'📉', remittance:'🔄'
+  };
+  return map[plain] || map[plain.split(' ').pop()] || '📦';
 }
 
 // ══════════════════════════════════════════════
@@ -2973,7 +2975,7 @@ function renderDashboard() {
       return `<div class="tx-item" onclick="switchPage('finance')">
         <div class="tx-avatar" style="background:${isInc?'var(--green-bg)':'var(--red-bg)'};font-size:18px;border-radius:12px;width:42px;height:42px;display:flex;align-items:center;justify-content:center;">${emoji}</div>
         <div class="tx-info">
-          <div class="tx-name">${escHtml(cat.replace(/^[^\s]+\s/,''))}</div>
+          <div class="tx-name">${escHtml(cat)}</div>
           <div class="tx-meta">${fmtDate(item.date)}${item.notes?' · '+escHtml(item.notes.slice(0,28)):''}</div>
         </div>
         <div class="tx-amount ${isInc?'owed':'owe'}">
@@ -2988,7 +2990,7 @@ function renderDashboard() {
   const viewMoreHtml = allCombined.length > RECENT_LIMIT
     ? `<div style="text-align:center;margin:4px 28px 8px;">
         <button onclick="openAllActivity()" style="background:none;border:1px solid var(--border2);border-radius:12px;padding:10px 24px;font-size:13px;font-weight:600;color:var(--accent2);cursor:pointer;width:100%;font-family:inherit;">
-          View all ${allCombined.length} activities →
+          View all activities →
         </button>
       </div>`
     : '';
@@ -3684,7 +3686,7 @@ function openAllActivity() {
             return `<div class="tx-item" onclick="closeModal('allActivityModal');switchPage('finance')">
               <div class="tx-avatar" style="background:${isInc?'var(--green-bg)':'var(--red-bg)'};font-size:18px;border-radius:12px;width:42px;height:42px;display:flex;align-items:center;justify-content:center;">${emoji}</div>
               <div class="tx-info">
-                <div class="tx-name">${escHtml(cat.replace(/^[^\s]+\s/,''))}</div>
+                <div class="tx-name">${escHtml(cat)}</div>
                 <div class="tx-meta">${fmtDate(item.date)}${item.notes?' · '+escHtml(item.notes.slice(0,30)):''}</div>
               </div>
               <div class="tx-amount ${isInc?'owed':'owe'}">
@@ -3939,7 +3941,12 @@ let finTab = 'all';
 let finEntryType = 'income';
 
 
-const EXPENSE_CATS = ['🏠 Housing','🍔 Food','🚗 Transport','💊 Health','👕 Shopping','📱 Bills','🎓 Education','✈️ Travel','👨‍👩‍👧 Family','🕌 Charity','🎮 Entertainment','🔄 Remittance','📦 Other'];
+// Strip leading emoji from category strings before storing
+function stripCatEmoji(cat) {
+  return String(cat||'').replace(/^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)\s*/u, '').trim();
+}
+
+const EXPENSE_CATS = ['Housing','Food','Transport','Health','Shopping','Bills','Education','Travel','Family','Charity','Entertainment','Remittance','Other'];
 const INCOME_SOURCES = ['Salary','Freelance','Business','Rental','Investment','Gift','Remittance','Other'];
 const ADD_CUSTOM_VALUE = '__add_custom__';
 
@@ -3955,10 +3962,10 @@ function addCustomCat(type, cat) {
   }
 }
 function getExpenseCats() {
-  return [...EXPENSE_CATS, ...getCustomCats('Expense')];
+  return [...EXPENSE_CATS, ...getCustomCats('Expense').map(stripCatEmoji).filter(Boolean)];
 }
 function getIncomeCats() {
-  return [...INCOME_SOURCES, ...getCustomCats('Income')];
+  return [...INCOME_SOURCES, ...getCustomCats('Income').map(stripCatEmoji).filter(Boolean)];
 }
 
 // Populate the finSource / finCategory selects dynamically (called on init & after adding a category)
@@ -3993,18 +4000,15 @@ function handleCatSelectChange(selectEl, type) {
 
 // Save a new custom category from the modal
 function saveCustomCategory() {
-  const type = document.getElementById('newCatType').value; // 'income' or 'expense'
-  let emoji = document.getElementById('newCatEmoji').value.trim();
+  const type = document.getElementById('newCatType').value;
   const name = document.getElementById('newCatName').value.trim();
 
   if (!name) { toast('⚠️ Please enter a category name'); return; }
-  if (!emoji) emoji = '📦';
 
-  const newCat = `${emoji} ${name}`;
+  const newCat = name; // store plain name only — emoji shown from getFinCatEmoji at display time
   const storeType = type === 'income' ? 'Income' : 'Expense';
   addCustomCat(storeType, newCat);
 
-  // Refresh dropdowns and select the new category
   populateCategorySelects();
   if (document.getElementById('finSource') && getIncomeCats().includes(newCat) && type === 'income') {
     document.getElementById('finSource').value = newCat;
@@ -4013,13 +4017,12 @@ function saveCustomCategory() {
     document.getElementById('finCategory').value = newCat;
   }
 
-  // Refresh Quick Entry chips if open and matching mode, then select new chip
   if (typeof qeMode !== 'undefined' && document.getElementById('quickEntryBar')?.classList.contains('open')) {
     if ((type==='income' && qeMode==='income') || (type==='expense' && qeMode==='expense')) {
       setQuickMode(qeMode);
       qeCategory = newCat;
       document.querySelectorAll('.qe-cat-chip').forEach(b => {
-        if (b.textContent.trim() === newCat) b.classList.add('active');
+        if (b.dataset.cat === newCat) b.classList.add('active');
         else b.classList.remove('active');
       });
     }
@@ -4199,7 +4202,7 @@ function renderFinancePage() {
     const expEntries = getMonthEntries(finViewMonth).filter(e=>e.type==='expense');
     const catMap = {};
     expEntries.forEach(e => {
-      const key = e.category || '📦 Other';
+      const key = stripCatEmoji(e.category || 'Other');
       if (!catMap[key]) catMap[key] = { byCur:{}, entries:[] };
       const cur = e.currency || 'AED';
       catMap[key].byCur[cur] = (catMap[key].byCur[cur]||0) + Number(e.amount||0);
@@ -4227,7 +4230,7 @@ function renderFinancePage() {
 
 function buildFinItem(e) {
   const label = e.type==='income' ? e.source : e.category;
-  const icon = e.type==='income' ? '📈' : (e.category||'📦').split(' ')[0];
+  const icon = e.type==='income' ? '📈' : getFinCatEmoji(e.category||'Other');
   return `<div class="fin-item" onclick="openFinDetail('${e.id}')">
     <div class="fin-icon-box ${e.type}">${icon}</div>
     <div class="fin-item-info">
@@ -4269,7 +4272,7 @@ function openAddFinEntry(type) {
   populateCategorySelects();
   setFinType(finEntryType);
   document.getElementById('finAmount').value = '';
-  document.getElementById('finCurrency').value = DB.get('defaultCurrency') || 'AED';
+  document.getElementById('finCurrency').value = DB.get('lastCurrency') || DB.get('defaultCurrency') || 'AED';
   document.getElementById('finDate').value = today();
   document.getElementById('finNotes').value = '';
   openModal('addFinModal');
@@ -4282,8 +4285,8 @@ function editFinEntry(id) {
   document.getElementById('editFinId').value = e.id;
   populateCategorySelects();
   setFinType(e.type);
-  if(e.type==='income') document.getElementById('finSource').value = e.source||INCOME_SOURCES[0];
-  else document.getElementById('finCategory').value = e.category||'📦 Other';
+  if(e.type==='income') document.getElementById('finSource').value = stripCatEmoji(e.source||INCOME_SOURCES[0]);
+  else document.getElementById('finCategory').value = stripCatEmoji(e.category||'Other');
   document.getElementById('finAmount').value = e.amount;
   document.getElementById('finCurrency').value = e.currency;
   document.getElementById('finDate').value = e.date;
@@ -4307,11 +4310,12 @@ function saveFinEntry() {
   const date = document.getElementById('finDate').value;
   const notes = document.getElementById('finNotes').value.trim();
   const editId = document.getElementById('editFinId').value;
-  const source = finEntryType==='income' ? document.getElementById('finSource').value : null;
-  const category = finEntryType==='expense' ? document.getElementById('finCategory').value : null;
+  const source = finEntryType==='income' ? stripCatEmoji(document.getElementById('finSource').value) : null;
+  const category = finEntryType==='expense' ? stripCatEmoji(document.getElementById('finCategory').value) : null;
 
   if(!amount || amount<=0) { toast('⚠️ Enter a valid amount'); return; }
   if(!date) { toast('⚠️ Please select a date'); return; }
+  DB.set('lastCurrency', currency);
 
   if(editId) {
     const idx = finEntries.findIndex(e=>e.id===editId);
@@ -4341,11 +4345,11 @@ function deleteFinEntry(id) {
 // ══════════════════════════════════════════════
 //  QUICK ENTRY WIDGET — 4 MODE
 // ══════════════════════════════════════════════
-const QE_EXPENSE_CATS = ['🍔 Food','🚗 Transport','📱 Bills','🏠 Housing','👕 Shopping','💊 Health','✈️ Travel','🎓 Education','🕌 Charity','🔄 Remittance','📦 Other'];
-const QE_INCOME_CATS  = ['💼 Salary','🧑‍💻 Freelance','🏢 Business','🎁 Gift','📊 Investment','🔄 Remittance','📦 Other'];
+const QE_EXPENSE_CATS = ['Food','Transport','Bills','Housing','Shopping','Health','Travel','Education','Charity','Remittance','Other'];
+const QE_INCOME_CATS  = ['Salary','Freelance','Business','Gift','Investment','Remittance','Other'];
 
 let qeMode = 'expense';
-let qeCategory = '🍔 Food';
+let qeCategory = 'Food';
 
 function openQuickEntry(mode) {
   document.getElementById('quickEntryBar').classList.add('open');
@@ -4353,7 +4357,8 @@ function openQuickEntry(mode) {
   document.getElementById('qeNotes').value = '';
   document.getElementById('qePersonInput').value = '';
   document.getElementById('qePersonDropdown').style.display = 'none';
-  document.getElementById('qeCurrency').value = DB.get('defaultCurrency') || 'AED';
+  document.getElementById('qeCurrency').value = DB.get('lastCurrency') || DB.get('defaultCurrency') || 'AED';
+  document.querySelector('nav').style.display = 'none';
   setQuickMode(mode || 'expense');
   setTimeout(() => document.getElementById('qeAmountDisplay').focus(), 300);
 }
@@ -4362,6 +4367,7 @@ function closeQuickEntry() {
   document.getElementById('quickEntryBar').classList.remove('open');
   document.getElementById('quickEntryOverlay').classList.remove('open');
   document.getElementById('qePersonDropdown').style.display = 'none';
+  document.querySelector('nav').style.display = '';
 }
 
 function setQuickMode(mode) {
@@ -4393,25 +4399,67 @@ function setQuickMode(mode) {
   const remSec = document.getElementById('qeRemittanceSection');
   if (remSec) { remSec.classList.remove('show'); document.getElementById('qeRemCalc').textContent = ''; }
 
-  // Load category chips — merge custom categories, add a trailing "+ Add" chip
+  // Load category chips with saved order and drag-to-reorder support
   if (!isDebt) {
-    const baseCats = mode === 'income' ? QE_INCOME_CATS : QE_EXPENSE_CATS;
-    const customCats = mode === 'income' ? getCustomCats('Income') : getCustomCats('Expense');
-    // Merge, removing duplicates while keeping order
-    const cats = [...baseCats];
-    customCats.forEach(c => { if (!cats.includes(c)) cats.push(c); });
+    const cats = getOrderedCats(mode);
     qeCategory = cats[0];
-    document.getElementById('qeCatScroll').innerHTML = cats.map((c,i) =>
-      `<button class="qe-cat-chip${i===0?' active':''}"
-        onmousedown="qeSelectCat(this,'${escJsAttr(c)}')"
-        ontouchstart="qeSelectCat(this,'${escJsAttr(c)}')">${c}</button>`
-    ).join('') + `<button class="qe-cat-chip" style="border-style:dashed;color:var(--text2);"
+    const scroll = document.getElementById('qeCatScroll');
+    scroll.innerHTML = cats.map((c,i) => {
+      const plain = stripCatEmoji(c);
+      const emoji = getFinCatEmoji(plain);
+      return `<button class="qe-cat-chip${i===0?' active':''}" data-cat="${escAttr(plain)}"
+        onmousedown="qeSelectCat(this,'${escJsAttr(plain)}')"
+        ontouchstart="qeSelectCat(this,'${escJsAttr(plain)}')">${emoji} ${plain}</button>`;
+    }).join('') + `<button class="qe-cat-chip" style="border-style:dashed;color:var(--text2);"
         onmousedown="openAddCategoryFromQE('${mode}')"
-        ontouchstart="openAddCategoryFromQE('${mode}')">➕ Add</button>`;
+        ontouchstart="openAddCategoryFromQE('${mode}')">+ Add</button>`;
+
+    // Drag-to-reorder on desktop
+    let dragSrc = null;
+    scroll.querySelectorAll('.qe-cat-chip[data-cat]').forEach(chip => {
+      chip.draggable = true;
+      chip.addEventListener('dragstart', () => { dragSrc = chip; chip.style.opacity='0.4'; });
+      chip.addEventListener('dragend', () => { chip.style.opacity=''; _saveCatChipOrder(scroll, mode); dragSrc = null; });
+      chip.addEventListener('dragover', e => e.preventDefault());
+      chip.addEventListener('drop', e => {
+        e.preventDefault();
+        if (dragSrc && dragSrc !== chip) {
+          const chips = [...scroll.querySelectorAll('.qe-cat-chip[data-cat]')];
+          if (chips.indexOf(dragSrc) < chips.indexOf(chip)) chip.after(dragSrc);
+          else chip.before(dragSrc);
+        }
+      });
+    });
   }
 }
 
-// Open the add-category modal from within Quick Entry
+function _saveCatChipOrder(scroll, mode) {
+  const order = [...scroll.querySelectorAll('.qe-cat-chip[data-cat]')].map(b => b.dataset.cat);
+  saveCatOrder(mode, order);
+}
+
+function getCatOrder(mode) {
+  return DB.get('catOrder_' + mode) || null;
+}
+function saveCatOrder(mode, cats) {
+  DB.set('catOrder_' + mode, cats);
+}
+
+function getOrderedCats(mode) {
+  const baseCats = mode === 'income' ? QE_INCOME_CATS : QE_EXPENSE_CATS;
+  const customCats = mode === 'income' ? getCustomCats('Income') : getCustomCats('Expense');
+  const all = [...baseCats];
+  customCats.forEach(c => { if (!all.includes(c)) all.push(c); });
+  const savedOrder = getCatOrder(mode);
+  if (savedOrder && Array.isArray(savedOrder)) {
+    // Apply saved order: put saved items first in their order, then any new ones at end
+    const ordered = savedOrder.filter(c => all.includes(c));
+    all.forEach(c => { if (!ordered.includes(c)) ordered.push(c); });
+    return ordered;
+  }
+  return all;
+}
+
 function openAddCategoryFromQE(qeModeType) {
   const type = qeModeType === 'income' ? 'income' : 'expense';
   document.getElementById('newCatType').value = type;
@@ -4488,6 +4536,9 @@ function saveQuickEntry() {
 
   if (!amount || amount <= 0) { toast('⚠️ Enter an amount'); return; }
 
+  // Remember last used currency
+  DB.set('lastCurrency', currency);
+
   const isDebt = qeMode === 'lent' || qeMode === 'borrow';
 
   if (isDebt) {
@@ -4521,8 +4572,8 @@ function saveQuickEntry() {
 
     finEntries.unshift({
       id: uid(), type: qeMode,
-      source: qeMode === 'income' ? qeCategory : null,
-      category: qeMode === 'expense' ? qeCategory : null,
+      source: qeMode === 'income' ? stripCatEmoji(qeCategory) : null,
+      category: qeMode === 'expense' ? stripCatEmoji(qeCategory) : null,
       amount, currency, date: today(), notes: finalNotes,
       exRate: exRate || undefined, remCurrency: remCur || undefined,
       createdAt: Date.now()
