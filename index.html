@@ -583,12 +583,17 @@ nav {
 .dfh-val.income { color:var(--green); }
 .dfh-val.expense { color:var(--red); }
 .dfh-val.saved { color:var(--accent2); }
+
+/* On blue finance hero, keep text white */
+.dash-finance-hero .dfh-val.income,
+.dash-finance-hero .dfh-val.expense,
+.dash-finance-hero .dfh-val.saved { color: #ffffff !important; }
 .dfh-sub { font-size:10px; color:var(--text3); margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .dfh-val .dfh-cur { margin-top:4px; }
 .dfh-val > span:first-child .dfh-cur { margin-top:0; }
 .dfh-bar-wrap { margin-top:12px; }
 .dfh-bar-label { display:flex; justify-content:space-between; margin-bottom:4px; }
-.dfh-bar-label span { font-size:11px; color:var(--text2); }
+.dfh-bar-label span { font-size:11px; color:rgba(255,255,255,0.7); }
 .dfh-bar-track { height:4px; background:var(--surface3); border-radius:3px; overflow:hidden; }
 .dfh-bar-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,var(--accent),var(--green)); transition:width 0.5s ease; }
 .dfh-bar-fill.warn { background:linear-gradient(90deg,var(--amber),#f97316); }
@@ -667,6 +672,10 @@ nav {
   background: var(--surface);
   box-shadow: 0 4px 10px rgba(0,0,0,0.16);
   transition: transform 0.2s ease;
+}
+
+body[data-theme="dark"] .theme-switch {
+  background: var(--accent) !important;
 }
 
 body[data-theme="dark"] .theme-switch::after {
@@ -1118,7 +1127,7 @@ body {
 }
 
 .page {
-  padding: 10px 0 calc(var(--nav-h) + var(--safe-bottom) + 28px);
+  padding: 10px 0 calc(var(--nav-h) + var(--safe-bottom) + 52px);
 }
 
 .dash-header,
@@ -1165,7 +1174,6 @@ body {
 }
 
 .dash-header > div:last-child,
-#ledgerAddContactBtn,
 .modal-close,
 .fin-month-btn {
   background: #ffffff !important;
@@ -1174,23 +1182,30 @@ body {
   box-shadow: 0 12px 26px rgba(36,52,83,0.10);
 }
 
+#ledgerAddContactBtn {
+  background: var(--accent) !important;
+  border: none !important;
+  border-radius: 14px !important;
+  box-shadow: 0 8px 20px rgba(109,53,255,0.28);
+  color: #ffffff !important;
+}
+
 .dash-header > div:last-child {
   padding: 10px 12px;
 }
 
 .dash-finance-hero {
   margin: 2px 28px 18px;
-  padding: 18px;
-  background:
-    linear-gradient(135deg, rgba(255,255,255,0.74) 0%, rgba(255,255,255,0.18) 48%),
-    linear-gradient(135deg, #fff5ef 0%, #c9bdff 58%, #a793ff 100%) !important;
+  padding: 24px 22px;
+  background: linear-gradient(135deg, #1971e8 0%, #145fca 100%) !important;
   border: none;
-  border-radius: 14px;
-  box-shadow: 0 18px 36px rgba(114,88,214,0.16);
+  border-radius: 18px;
+  box-shadow: 0 18px 38px rgba(25,113,232,0.24);
+  color: #ffffff;
 }
 
 .dfh-month {
-  color: #4f5e73;
+  color: rgba(255,255,255,0.8);
   font-size: 12px;
   font-weight: 650;
   letter-spacing: 0;
@@ -1202,18 +1217,25 @@ body {
 }
 
 .dfh-item {
-  background: rgba(255,255,255,0.52);
-  border: 1px solid rgba(255,255,255,0.34);
+  background: rgba(255,255,255,0.14);
+  border: 1px solid rgba(255,255,255,0.18);
   border-radius: 13px;
   padding: 11px 10px !important;
 }
 
 .dfh-item + .dfh-item {
-  border-left: 1px solid rgba(255,255,255,0.34);
+  border-left: 1px solid rgba(255,255,255,0.18);
 }
 
 .dfh-label,
-.fin-total-label,
+.fin-total-label {
+  color: rgba(255,255,255,0.8);
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 700;
+}
+
 .ddc-label,
 .section-title,
 .dash-section-title {
@@ -1227,25 +1249,25 @@ body {
 .dfh-val,
 .ddc-amount,
 .fin-total-val {
-  color: var(--text) !important;
-  font-size: 22px;
+  color: #ffffff !important;
+  font-size: 15px;
   font-weight: 850;
 }
 
 .dfh-cur,
 .fin-cur {
-  color: #5d6980;
+  color: rgba(255,255,255,0.7);
   font-size: 11px;
 }
 
 .dfh-sub,
 .ddc-count {
-  color: #69768b;
+  color: rgba(255,255,255,0.6);
 }
 
 .dfh-bar-track,
 .savings-bar-track {
-  background: rgba(255,255,255,0.58);
+  background: rgba(255,255,255,0.25);
   height: 6px;
 }
 
@@ -1652,7 +1674,6 @@ body[data-theme="dark"] #app {
 }
 
 body[data-theme="dark"] .dash-header > div:last-child,
-body[data-theme="dark"] #ledgerAddContactBtn,
 body[data-theme="dark"] .modal-close,
 body[data-theme="dark"] .fin-month-btn,
 body[data-theme="dark"] .dash-debt-card,
@@ -1675,9 +1696,7 @@ body[data-theme="dark"] .quick-entry-bar {
 }
 
 body[data-theme="dark"] .dash-finance-hero {
-  background:
-    linear-gradient(135deg, rgba(30,41,59,0.86) 0%, rgba(30,41,59,0.36) 48%),
-    linear-gradient(135deg, #1f2937 0%, #4c1d95 58%, #6d28d9 100%) !important;
+  background: linear-gradient(135deg, #075985 0%, #1e40af 100%) !important;
   box-shadow: 0 18px 40px rgba(0,0,0,0.28);
 }
 
@@ -1850,23 +1869,26 @@ textarea:focus-visible,
       </div>
     </div>
 
-    <!-- Debt Summary Cards -->
-    <div class="dash-debt-row">
-      <div class="dash-debt-card owed" onclick="switchPage('transactions');setFilter(document.querySelector('[data-filter=owed]'),'owed')">
-        <div class="ddc-label owed">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
-          Owed to Me
+    <!-- Ledger Summary Card -->
+    <div style="margin:0 28px 18px;">
+      <div style="background:linear-gradient(135deg,#7c5cff 0%,#a78bfa 100%);border-radius:18px;padding:20px;box-shadow:0 18px 38px rgba(124,92,255,0.22);color:#fff;cursor:pointer;" onclick="switchPage('transactions')">
+        <div style="font-size:11px;font-weight:700;opacity:0.8;margin-bottom:14px;letter-spacing:0;">Ledger Overview</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+          <div style="background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.18);border-radius:13px;padding:11px 10px;">
+            <div style="font-size:11px;font-weight:700;opacity:0.8;margin-bottom:4px;">Owed to Me</div>
+            <div id="dashOwed" style="font-size:15px;font-weight:850;line-height:1.3;word-break:break-word;">—</div>
+            <div id="dashOwedCount" style="font-size:10px;opacity:0.65;margin-top:3px;"></div>
+          </div>
+          <div style="background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.18);border-radius:13px;padding:11px 10px;">
+            <div style="font-size:11px;font-weight:700;opacity:0.8;margin-bottom:4px;">I Owe</div>
+            <div id="dashOwe" style="font-size:15px;font-weight:850;line-height:1.3;word-break:break-word;">—</div>
+            <div id="dashOweCount" style="font-size:10px;opacity:0.65;margin-top:3px;"></div>
+          </div>
         </div>
-        <div class="ddc-amount owed" id="dashOwed">—</div>
-        <div class="ddc-count" id="dashOwedCount"></div>
-      </div>
-      <div class="dash-debt-card owe" onclick="switchPage('transactions');setFilter(document.querySelector('[data-filter=owe]'),'owe')">
-        <div class="ddc-label owe">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-          I Owe
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:12px;opacity:0.75;">Tap to view all transactions</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7"><path d="M9 18l6-6-6-6"/></svg>
         </div>
-        <div class="ddc-amount owe" id="dashOwe">—</div>
-        <div class="ddc-count" id="dashOweCount"></div>
       </div>
     </div>
 
@@ -1936,12 +1958,30 @@ textarea:focus-visible,
       </button>
     </div>
 
+    <!-- Ledger Summary Card — always visible above the tabs -->
+    <div id="ledgerSummaryCard" style="margin:0 28px 16px;">
+      <div style="background:linear-gradient(135deg,#7c5cff 0%,#a78bfa 100%);border-radius:18px;padding:20px;box-shadow:0 18px 38px rgba(124,92,255,0.22);color:#fff;">
+        <div style="font-size:11px;font-weight:700;opacity:0.8;margin-bottom:14px;">Ledger Overview</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div style="background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.18);border-radius:13px;padding:11px 10px;">
+            <div style="font-size:11px;font-weight:700;opacity:0.8;margin-bottom:4px;">Owed to Me</div>
+            <div id="ledgerOwedAmt" style="font-size:15px;font-weight:850;line-height:1.3;word-break:break-word;">—</div>
+            <div id="ledgerOwedCount" style="font-size:10px;opacity:0.65;margin-top:3px;"></div>
+          </div>
+          <div style="background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.18);border-radius:13px;padding:11px 10px;">
+            <div style="font-size:11px;font-weight:700;opacity:0.8;margin-bottom:4px;">I Owe</div>
+            <div id="ledgerOweAmt" style="font-size:15px;font-weight:850;line-height:1.3;word-break:break-word;">—</div>
+            <div id="ledgerOweCount" style="font-size:10px;opacity:0.65;margin-top:3px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="sub-tabs">
       <button class="sub-tab active" id="ledgerSubTxns" onclick="setLedgerTab('transactions')">Transactions</button>
       <button class="sub-tab" id="ledgerSubContacts" onclick="setLedgerTab('contacts')">Contacts</button>
     </div>
 
-    <!-- Transactions Sub-View -->
     <div id="ledgerTxView">
       <div class="search-wrap">
         <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -2463,6 +2503,58 @@ textarea:focus-visible,
   </div>
 </div>
 
+<!-- ══════════════ PRINT OPTIONS MODAL ══════════════ -->
+<div class="modal-overlay" id="printOptionsModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title">Print / Save as PDF</div>
+      <button class="modal-close" onclick="closeModal('printOptionsModal')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6;">Choose what data to include in your PDF report. Each option opens a print-ready page in a new tab.</p>
+
+      <!-- Ledger Only -->
+      <div onclick="doPrint('ledger')" style="display:flex;align-items:center;gap:14px;padding:18px 16px;background:var(--surface2);border-radius:var(--radius);margin-bottom:10px;cursor:pointer;border:1px solid var(--border2);transition:all 0.15s;"
+        onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)'">
+        <div style="width:44px;height:44px;border-radius:12px;background:rgba(124,92,255,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;">📒</div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:15px;">Ledger Only</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:3px;">All borrowed &amp; lent transactions with balances</div>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+
+      <!-- Finance Only -->
+      <div onclick="doPrint('finance')" style="display:flex;align-items:center;gap:14px;padding:18px 16px;background:var(--surface2);border-radius:var(--radius);margin-bottom:10px;cursor:pointer;border:1px solid var(--border2);transition:all 0.15s;"
+        onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)'">
+        <div style="width:44px;height:44px;border-radius:12px;background:rgba(25,113,232,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;">💰</div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:15px;">Finance Only</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:3px;">All income &amp; expense entries with totals</div>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+
+      <!-- Full Report -->
+      <div onclick="doPrint('all')" style="display:flex;align-items:center;gap:14px;padding:18px 16px;background:var(--surface2);border-radius:var(--radius);margin-bottom:10px;cursor:pointer;border:1px solid var(--accent);transition:all 0.15s;position:relative;"
+        onmouseover="this.style.background='var(--accent-glow)'" onmouseout="this.style.background='var(--surface2)'">
+        <div style="position:absolute;top:-1px;right:10px;background:var(--accent);color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:0 0 8px 8px;letter-spacing:0.05em;">RECOMMENDED</div>
+        <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,rgba(124,92,255,0.15),rgba(25,113,232,0.15));display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;">📊</div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:15px;">Full Report</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:3px;">Ledger + Finance combined in one document</div>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+
+      <div style="height:4px;"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════════ QUICK ENTRY WIDGET ══════════════ -->
 <div id="quickEntryOverlay" onclick="closeQuickEntry()"></div>
 <div class="quick-entry-bar" id="quickEntryBar">
@@ -2849,16 +2941,18 @@ function renderDashboard() {
   // Merge recent transactions + finance entries, sort by date
   const recentTx = [...transactions]
     .sort((a,b) => b.createdAt - a.createdAt)
-    .slice(0, 5);
+    .slice(0, 10);
 
   const recentFin = [...finEntries]
     .sort((a,b) => b.createdAt - a.createdAt)
-    .slice(0, 3);
+    .slice(0, 10);
 
   // Interleave by createdAt
-  const combined = [...recentTx, ...recentFin]
-    .sort((a,b) => b.createdAt - a.createdAt)
-    .slice(0, 8);
+  const allCombined = [...recentTx, ...recentFin]
+    .sort((a,b) => b.createdAt - a.createdAt);
+
+  const RECENT_LIMIT = 7;
+  const combined = allCombined.slice(0, RECENT_LIMIT);
 
   if (combined.length === 0) {
     recentEl.innerHTML = `<div class="empty-state">
@@ -2869,7 +2963,7 @@ function renderDashboard() {
     return;
   }
 
-  recentEl.innerHTML = combined.map(item => {
+  const itemsHtml = combined.map(item => {
     // Finance entry
     if (item.type === 'income' || item.type === 'expense') {
       const isInc = item.type === 'income';
@@ -2890,6 +2984,16 @@ function renderDashboard() {
     // Debt transaction
     return buildTxItem(item);
   }).join('');
+
+  const viewMoreHtml = allCombined.length > RECENT_LIMIT
+    ? `<div style="text-align:center;margin:4px 28px 8px;">
+        <button onclick="openAllActivity()" style="background:none;border:1px solid var(--border2);border-radius:12px;padding:10px 24px;font-size:13px;font-weight:600;color:var(--accent2);cursor:pointer;width:100%;font-family:inherit;">
+          View all ${allCombined.length} activities →
+        </button>
+      </div>`
+    : '';
+
+  recentEl.innerHTML = itemsHtml + viewMoreHtml;
 }
 
 // ══════════════════════════════════════════════
@@ -2926,6 +3030,37 @@ function buildTxItem(tx) {
   </div>`;
 }
 
+function renderLedgerCard() {
+  const oweMap = {}, owedMap = {};
+  let oweCount = 0, owedCount = 0;
+  transactions.forEach(tx => {
+    if (getTxStatus(tx) === 'settled') return;
+    const rem = getRemainingAmount(tx);
+    const cur = tx.currency;
+    if (tx.type === 'borrow') { oweMap[cur] = (oweMap[cur]||0) + rem; oweCount++; }
+    else { owedMap[cur] = (owedMap[cur]||0) + rem; owedCount++; }
+  });
+
+  function fmtCurMap(map, count, zeroText) {
+    const curs = Object.keys(map);
+    if (curs.length === 0) return { amt: zeroText, count: 'nothing outstanding' };
+    const amt = curs.map(c => `${c} ${fmt(map[c])}`).join('<br>');
+    return { amt, count: `${count} active` };
+  }
+
+  const owed = fmtCurMap(owedMap, owedCount, 'All clear');
+  const owe = fmtCurMap(oweMap, oweCount, 'All clear');
+
+  ['ledgerOwedAmt','ledgerOweAmt'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = i === 0 ? owed.amt : owe.amt;
+  });
+  const owedCntEl = document.getElementById('ledgerOwedCount');
+  const oweCntEl = document.getElementById('ledgerOweCount');
+  if (owedCntEl) owedCntEl.textContent = owed.count;
+  if (oweCntEl) oweCntEl.textContent = owe.count;
+}
+
 // ══════════════════════════════════════════════
 //  LEDGER SUB-TABS (Transactions / Contacts)
 // ══════════════════════════════════════════════
@@ -2942,12 +3077,14 @@ function setLedgerTab(tab) {
     txView.style.display = 'block'; cView.style.display = 'none';
     titleEl.textContent = 'Ledger';
     addBtn.style.display = 'none';
+    renderLedgerCard();
     renderTransactions();
   } else {
     cBtn.classList.add('active'); txBtn.classList.remove('active');
     cView.style.display = 'block'; txView.style.display = 'none';
     titleEl.textContent = 'Contacts';
     addBtn.style.display = 'flex';
+    renderLedgerCard();
     renderContacts();
   }
 }
@@ -3386,8 +3523,137 @@ function openPersonSummary(personName) {
 //  DATA PAGE
 // ══════════════════════════════════════════════
 function printReport() {
-  switchPage('transactions');
-  setTimeout(()=>window.print(), 300);
+  openModal('printOptionsModal');
+}
+
+function doPrint(type) {
+  closeModal('printOptionsModal');
+
+  // Build dynamic print content
+  const printWin = window.open('', '_blank', 'width=800,height=600');
+  if (!printWin) { toast('⚠️ Please allow popups to print'); return; }
+
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+
+  let content = `<!DOCTYPE html><html><head><title>My Ledger — ${type} Report</title>
+  <style>
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif; color:#0b1736; background:#fff; padding:28px; }
+    h1 { font-size:24px; font-weight:800; margin-bottom:4px; }
+    .subtitle { font-size:13px; color:#617087; margin-bottom:24px; }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    th { background:#f2f5fb; padding:10px 12px; text-align:left; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:#617087; border-bottom:2px solid #e5ebf5; }
+    td { padding:10px 12px; border-bottom:1px solid #edf1f7; vertical-align:top; }
+    tr:last-child td { border-bottom:none; }
+    .amt-pos { color:#0ea470; font-weight:700; }
+    .amt-neg { color:#e8365d; font-weight:700; }
+    .badge { display:inline-block; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:700; text-transform:uppercase; }
+    .badge-active { background:#e7fbfd; color:#0c6e7d; }
+    .badge-settled { background:#f2f5fb; color:#617087; }
+    .badge-partial { background:#fff7e8; color:#b27400; }
+    .section-gap { margin-top:32px; }
+    .section-title { font-size:16px; font-weight:800; margin-bottom:12px; padding-bottom:8px; border-bottom:2px solid #f2f5fb; }
+    .summary-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:24px; }
+    .summary-card { background:#f7f9fd; border-radius:12px; padding:16px; }
+    .summary-card .label { font-size:11px; color:#617087; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; }
+    .summary-card .value { font-size:20px; font-weight:800; margin-top:4px; }
+    .footer { margin-top:32px; font-size:11px; color:#9aa5b5; text-align:center; border-top:1px solid #edf1f7; padding-top:16px; }
+    @media print { body { padding:16px; } }
+  </style></head><body>`;
+
+  const ym = now.toISOString().slice(0,7);
+  const monthLabel = now.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+
+  if (type === 'ledger' || type === 'all') {
+    // Ledger section
+    const txSorted = [...transactions].sort((a,b) => (b.date||'').localeCompare(a.date||''));
+    const oweMap = {}, owedMap = {};
+    let oweCount = 0, owedCount = 0;
+    transactions.forEach(tx => {
+      if (getTxStatus(tx) === 'settled') return;
+      const rem = getRemainingAmount(tx);
+      const c = tx.currency;
+      if (tx.type === 'borrow') { oweMap[c] = (oweMap[c]||0) + rem; oweCount++; }
+      else { owedMap[c] = (owedMap[c]||0) + rem; owedCount++; }
+    });
+    const owedStr = Object.keys(owedMap).length ? Object.entries(owedMap).map(([c,a])=>`${c} ${fmt(a)}`).join(', ') : 'All clear';
+    const oweStr = Object.keys(oweMap).length ? Object.entries(oweMap).map(([c,a])=>`${c} ${fmt(a)}`).join(', ') : 'All clear';
+
+    content += `
+    <h1>📒 Ledger Report</h1>
+    <div class="subtitle">Generated ${dateStr} · ${transactions.length} record${transactions.length!==1?'s':''}</div>
+    <div class="summary-grid">
+      <div class="summary-card"><div class="label">Total Records</div><div class="value">${transactions.length}</div></div>
+      <div class="summary-card"><div class="label">Owed to Me</div><div class="value" style="color:#0ea470;font-size:14px;">${owedStr}</div></div>
+      <div class="summary-card"><div class="label">I Owe</div><div class="value" style="color:#e8365d;font-size:14px;">${oweStr}</div></div>
+    </div>
+    <table>
+      <thead><tr><th>Person</th><th>Type</th><th>Amount</th><th>Date</th><th>Status</th><th>Notes</th></tr></thead>
+      <tbody>
+        ${txSorted.map(tx => {
+          const status = getTxStatus(tx);
+          const rem = getRemainingAmount(tx);
+          const isOwe = tx.type === 'borrow';
+          const amtHtml = isOwe
+            ? `<span class="amt-neg">−${tx.currency} ${fmt(tx.amount)}</span>`
+            : `<span class="amt-pos">+${tx.currency} ${fmt(tx.amount)}</span>`;
+          const badgeCls = status==='settled' ? 'badge-settled' : status==='partial' ? 'badge-partial' : 'badge-active';
+          const statusLabel = status==='settled' ? 'Settled' : status==='partial' ? `Partial (${tx.currency} ${fmt(rem)} left)` : 'Active';
+          return `<tr>
+            <td><strong>${escHtml(tx.person)}</strong></td>
+            <td>${isOwe?'I Borrowed':'I Lent'}</td>
+            <td>${amtHtml}</td>
+            <td>${fmtDate(tx.date)}</td>
+            <td><span class="badge ${badgeCls}">${statusLabel}</span></td>
+            <td style="color:#617087;">${escHtml(tx.notes||'—')}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>`;
+  }
+
+  if (type === 'finance' || type === 'all') {
+    const finSorted = [...finEntries].sort((a,b) => (b.date||'').localeCompare(a.date||''));
+    const totals = getMonthTotals(ym);
+    const incStr = Object.keys(totals.incByCur).length ? Object.entries(totals.incByCur).map(([c,a])=>`${c} ${fmt(a)}`).join(', ') : '—';
+    const expStr = Object.keys(totals.expByCur).length ? Object.entries(totals.expByCur).map(([c,a])=>`${c} ${fmt(a)}`).join(', ') : '—';
+
+    content += `
+    <div class="${type==='all'?'section-gap':''}">
+    <h1>💰 Finance Report</h1>
+    <div class="subtitle">Generated ${dateStr} · ${finEntries.length} entr${finEntries.length!==1?'ies':'y'} total</div>
+    <div class="summary-grid">
+      <div class="summary-card"><div class="label">This Month Income (${monthLabel})</div><div class="value amt-pos" style="font-size:14px;">${incStr}</div></div>
+      <div class="summary-card"><div class="label">This Month Expenses</div><div class="value amt-neg" style="font-size:14px;">${expStr}</div></div>
+      <div class="summary-card"><div class="label">Total Entries</div><div class="value">${finEntries.length}</div></div>
+    </div>
+    <table>
+      <thead><tr><th>Type</th><th>Category / Source</th><th>Amount</th><th>Date</th><th>Notes</th></tr></thead>
+      <tbody>
+        ${finSorted.map(e => {
+          const label = e.type==='income' ? (e.source||'Income') : (e.category||'Expense');
+          const isInc = e.type==='income';
+          const amtHtml = isInc
+            ? `<span class="amt-pos">+${e.currency} ${fmt(e.amount)}</span>`
+            : `<span class="amt-neg">−${e.currency} ${fmt(e.amount)}</span>`;
+          return `<tr>
+            <td><span class="badge ${isInc?'badge-active':'badge-partial'}">${isInc?'Income':'Expense'}</span></td>
+            <td>${escHtml(label)}</td>
+            <td>${amtHtml}</td>
+            <td>${fmtDate(e.date)}</td>
+            <td style="color:#617087;">${escHtml(e.notes||'—')}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table></div>`;
+  }
+
+  content += `<div class="footer">My Ledger · Printed ${dateStr}</div></body></html>`;
+
+  printWin.document.write(content);
+  printWin.document.close();
+  setTimeout(() => { printWin.focus(); printWin.print(); }, 400);
 }
 
 // ══════════════════════════════════════════════
@@ -3472,6 +3738,34 @@ function openCategoryDetail(cat, ym) {
     <div style="height:4px"></div>`;
 
   openModal('catDetailModal');
+}
+
+function renderAppearance() {
+  const isDark = document.body.getAttribute('data-theme') === 'dark';
+  const sw = document.getElementById('themeSwitch');
+  const desc = document.getElementById('themeModeDesc');
+  if (sw) {
+    if (isDark) {
+      sw.style.background = 'var(--accent)';
+      sw.querySelector ? null : null;
+      // Move knob to the right via ::after, handled by CSS
+    } else {
+      sw.style.background = '';
+    }
+  }
+  if (desc) desc.textContent = isDark ? 'Currently using dark appearance' : 'Use dark appearance';
+}
+
+function toggleTheme() {
+  const isDark = document.body.getAttribute('data-theme') === 'dark';
+  if (isDark) {
+    document.body.removeAttribute('data-theme');
+    DB.set('theme', 'light');
+  } else {
+    document.body.setAttribute('data-theme', 'dark');
+    DB.set('theme', 'dark');
+  }
+  renderAppearance();
 }
 
 function renderDataPage() {
@@ -4342,6 +4636,11 @@ function hideContactDropdown() {
 //  INIT
 // ══════════════════════════════════════════════
 function init() {
+  // Restore theme
+  const savedTheme = DB.get('theme');
+  if (savedTheme === 'dark') {
+    document.body.setAttribute('data-theme', 'dark');
+  }
   updateContactsDatalist();
   populateCategorySelects();
   finViewMonth = new Date().toISOString().slice(0,7);
