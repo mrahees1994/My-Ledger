@@ -438,19 +438,20 @@ nav {
 .fin-total-item + .fin-total-item { border-left:1px solid var(--border); padding-left:12px; padding-right:8px; }
 .fin-total-label { font-size:10px; color:var(--text2); text-transform:uppercase; letter-spacing:0.06em; font-weight:600; }
 .fin-total-val { font-size:15px; font-weight:700; margin-top:4px; line-height:1.2; word-break:break-word; }
-.fin-total-val .fin-cur { font-size:11px; font-weight:600; opacity:0.8; display:block; margin-bottom:1px; }
-.fin-total-item.income .fin-total-val { color:var(--green); }
-.fin-total-item.expense .fin-total-val { color:var(--red); }
-.fin-total-item.savings .fin-total-val { color:var(--accent2); }
+.fin-total-val .fin-cur { font-size:11px; font-weight:600; opacity:0.8; display:inline; margin-right:3px; }
+.fin-total-item.income .fin-total-val { color: #ffffff; }
+.fin-total-item.expense .fin-total-val { color: #ffffff; }
+.fin-total-item.savings .fin-total-val { color: #ffffff; }
 .savings-bar-wrap { margin:0 16px 12px; }
 .savings-bar-track { height:5px; background:var(--surface3); border-radius:3px; overflow:hidden; margin-top:5px; }
 .savings-bar-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,var(--accent),var(--green)); transition:width 0.4s; }
 .cat-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:0 16px 12px; }
-.cat-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px; cursor:pointer; transition:background 0.15s; }
+.cat-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px; cursor:pointer; transition:background 0.15s; }
 .cat-card:active { background:var(--surface2); }
-.cat-card .cat-icon { font-size:20px; margin-bottom:6px; }
-.cat-card .cat-name { font-size:12px; color:var(--text2); font-weight:500; }
-.cat-card .cat-amount { font-size:15px; font-weight:700; color:var(--red); margin-top:2px; }
+.cat-card .cat-icon { font-size:22px; margin-bottom:6px; }
+.cat-card .cat-name { font-size:13px; color:var(--text); font-weight:600; margin-bottom:4px; }
+.cat-card .cat-amount { font-size:14px; font-weight:700; color:var(--red); line-height:1.4; }
+.cat-card .cat-count { font-size:11px; color:var(--text3); margin-top:4px; }
 .fin-item { display:flex; align-items:center; gap:12px; padding:13px 16px; background:var(--surface); border-radius:var(--radius); margin:0 16px 8px; border:1px solid var(--border); cursor:pointer; transition:background 0.15s; }
 .fin-item:active { background:var(--surface2); }
 .fin-icon-box { width:40px; height:40px; border-radius:11px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:18px; }
@@ -576,24 +577,22 @@ nav {
   background:radial-gradient(circle,rgba(124,106,247,0.15) 0%,transparent 70%);
   pointer-events:none;
 }
-.dfh-month { font-size:11px; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:12px; }
+.dfh-month { font-size:12px; font-weight:700; color:rgba(255,255,255,0.8); margin-bottom:14px; }
 .dfh-row { display:flex; gap:0; }
-.dfh-item { flex:1; min-width:0; overflow:hidden; }
-.dfh-item + .dfh-item { border-left:1px solid var(--border); padding-left:10px; }
-.dfh-label { font-size:10px; color:var(--text2); font-weight:600; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px; }
-.dfh-cur { font-size:10px; color:var(--text3); font-weight:600; opacity:0.85; display:block; margin-bottom:1px; }
-.dfh-val { font-size:14px; font-weight:800; letter-spacing:-0.3px; line-height:1.3; overflow:hidden; word-break:break-word; }
-.dfh-val.income { color:var(--green); }
-.dfh-val.expense { color:var(--red); }
-.dfh-val.saved { color:var(--accent2); }
+.dfh-item { flex:1; min-width:0; overflow:hidden; padding-right:10px; }
+.dfh-item + .dfh-item { border-left:1px solid rgba(255,255,255,0.15); padding-left:12px; padding-right:8px; }
+.dfh-label { font-size:10px; color:rgba(255,255,255,0.75); font-weight:700; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:3px; }
+.dfh-cur { font-size:11px; color:rgba(255,255,255,0.7); font-weight:600; display:block; margin-bottom:1px; }
+.dfh-val { font-size:15px; font-weight:700; line-height:1.2; overflow:hidden; word-break:break-word; color:#ffffff; }
+.dfh-val.income { color:#ffffff; }
+.dfh-val.expense { color:#ffffff; }
+.dfh-val.saved { color:#ffffff; }
 
-/* On blue finance hero, keep text white */
+/* Negative saved — show with minus prefix, no color change needed on blue card */
 .dash-finance-hero .dfh-val.income,
 .dash-finance-hero .dfh-val.expense,
 .dash-finance-hero .dfh-val.saved { color: #ffffff !important; }
-.dfh-sub { font-size:10px; color:var(--text3); margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.dfh-val .dfh-cur { margin-top:4px; }
-.dfh-val > span:first-child .dfh-cur { margin-top:0; }
+.dfh-sub { font-size:10px; color:rgba(255,255,255,0.6); margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .dfh-bar-wrap { margin-top:12px; }
 .dfh-bar-label { display:flex; justify-content:space-between; margin-bottom:4px; }
 .dfh-bar-label span { font-size:11px; color:rgba(255,255,255,0.7); }
@@ -1259,10 +1258,25 @@ body {
   font-weight: 850;
 }
 
+/* Fix 1: currency label on same line as amount — inline not block */
 .dfh-cur,
 .fin-cur {
-  color: rgba(255,255,255,0.7);
+  display: inline;
   font-size: 11px;
+  font-weight: 600;
+  opacity: 0.75;
+  margin-right: 3px;
+  vertical-align: baseline;
+}
+
+.dfh-val,
+.fin-total-val {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+  overflow: hidden;
+  word-break: break-word;
+  color: #ffffff;
 }
 
 .dfh-sub,
@@ -1867,15 +1881,7 @@ textarea:focus-visible,
           <div class="dfh-sub" id="dashSavedSub"></div>
         </div>
       </div>
-      <div class="dfh-bar-wrap" id="dashSavingsBarWrap">
-        <div class="dfh-bar-label">
-          <span>Savings Rate</span>
-          <span id="dashSavingsRate" style="color:#ffffff;font-weight:800;text-shadow:0 1px 4px rgba(0,0,0,0.2);">0%</span>
-        </div>
-        <div class="dfh-bar-track">
-          <div class="dfh-bar-fill" id="dashSavingsBar" style="width:0%"></div>
-        </div>
-      </div>
+      <div id="dashSavingsRateWrap" style="margin-top:12px;"></div>
     </div>
 
     <!-- Ledger Summary Card -->
@@ -2051,15 +2057,8 @@ textarea:focus-visible,
           <div class="fin-total-val" id="finTotalSavings">0.00</div>
         </div>
       </div>
-    </div>
-
-    <!-- Savings bar -->
-    <div class="savings-bar-wrap">
-      <div style="display:flex;justify-content:space-between;">
-        <span style="font-size:12px;color:var(--text2);font-weight:500;">Savings Rate</span>
-        <span id="finSavingsRate" style="font-size:12px;color:var(--accent2);font-weight:600;">0%</span>
-      </div>
-      <div class="savings-bar-track"><div class="savings-bar-fill" id="finSavingsBar" style="width:0%"></div></div>
+      <!-- Savings rate bars — one per currency, inside blue card -->
+      <div id="finSavingsRateWrap" style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.15);"></div>
     </div>
 
     <!-- Sub tabs -->
@@ -2778,6 +2777,28 @@ function getFinCatEmoji(cat) {
 // ══════════════════════════════════════════════
 //  DASHBOARD
 // ══════════════════════════════════════════════
+// Build savings rate bars HTML — one per currency, white style for blue cards
+function buildSavingsRateBars(totals) {
+  const curs = totals.allCurs;
+  if (!curs.length) return '<span style="font-size:11px;opacity:0.5;">No data</span>';
+  return curs.map(c => {
+    const inc = totals.incByCur[c] || 0;
+    const sav = totals.savingsByCur[c] || 0;
+    const rate = inc > 0 ? Math.max(0, Math.min(100, Math.round((sav / inc) * 100))) : 0;
+    const label = curs.length > 1 ? `Savings · ${c}` : 'Savings Rate';
+    const barColor = rate < 20 ? 'linear-gradient(90deg,#f97316,#fb923c)' : 'linear-gradient(90deg,#6d35ff,#0fb7c7)';
+    return `<div style="margin-bottom:${curs.length > 1 ? '7px' : '0'};">
+      <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+        <span style="font-size:11px;color:rgba(255,255,255,0.75);font-weight:500;">${label}</span>
+        <span style="font-size:11px;color:#ffffff;font-weight:800;">${rate}%</span>
+      </div>
+      <div style="height:5px;background:rgba(255,255,255,0.2);border-radius:3px;overflow:hidden;">
+        <div style="height:100%;width:${rate}%;background:${barColor};border-radius:3px;transition:width 0.5s ease;"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
 function renderDashboard() {
   const now = new Date();
 
@@ -2838,36 +2859,30 @@ function renderDashboard() {
   const savCurs = totals.allCurs;
 
   if (savCurs.length === 0) {
-    dashSavedEl.innerHTML = '<span style="color:var(--text3)">—</span>';
+    dashSavedEl.innerHTML = '<span style="opacity:0.5">—</span>';
+    dashSavedEl.style.color = '';
     document.getElementById('dashSavedSub').textContent = 'no data';
-    document.getElementById('dashSavingsRate').textContent = '—';
-    document.getElementById('dashSavingsBar').style.width = '0%';
   } else if (savCurs.length === 1) {
     const c = savCurs[0];
     const saved = totals.savingsByCur[c];
-    dashSavedEl.innerHTML = `<span class="dfh-cur">${c}</span>${fmt(Math.abs(saved))}`;
-    dashSavedEl.style.color = saved >= 0 ? 'var(--accent2)' : 'var(--red)';
+    const sign = saved < 0 ? '−' : '';
+    dashSavedEl.innerHTML = `<span class="dfh-cur">${c}</span>${sign}${fmt(Math.abs(saved))}`;
+    dashSavedEl.style.color = '';
     const rate = totals.incByCur[c] > 0 ? Math.round((saved / totals.incByCur[c]) * 100) : 0;
-    document.getElementById('dashSavedSub').textContent = saved < 0 ? 'overspent' : `${rate}% saved`;
-    document.getElementById('dashSavingsRate').textContent = `${Math.max(0,rate)}%`;
-    const bar = document.getElementById('dashSavingsBar');
-    bar.style.width = Math.min(100, Math.max(0, rate)) + '%';
-    bar.className = 'dfh-bar-fill' + (saved < 0 ? ' over' : rate < 20 ? ' warn' : '');
-    document.getElementById('dashSavingsBarWrap').style.display = 'block';
+    document.getElementById('dashSavedSub').textContent = saved < 0 ? 'overspent' : `${Math.max(0,rate)}% saved`;
   } else {
-    // Multiple currencies — show per-currency saved amounts stacked
     dashSavedEl.innerHTML = savCurs.map(c => {
       const saved = totals.savingsByCur[c];
-      const color = saved >= 0 ? 'var(--accent2)' : 'var(--red)';
       const sign = saved < 0 ? '−' : '';
-      return `<span style="display:block;"><span class="dfh-cur" style="margin-bottom:0;">${c}</span><span style="color:${color}">${sign}${fmt(Math.abs(saved))}</span></span>`;
+      return `<span style="display:block;font-size:13px;margin-top:1px;"><span style="opacity:0.7;font-size:11px;margin-right:3px;">${c}</span>${sign}${fmt(Math.abs(saved))}</span>`;
     }).join('');
     dashSavedEl.style.color = '';
     document.getElementById('dashSavedSub').textContent = '';
-    document.getElementById('dashSavingsRate').textContent = '—';
-    document.getElementById('dashSavingsBar').style.width = '0%';
-    document.getElementById('dashSavingsBarWrap').style.display = 'none';
   }
+
+  // Savings rate bars — one per currency inside the blue card
+  const dashRateWrap = document.getElementById('dashSavingsRateWrap');
+  if (dashRateWrap) dashRateWrap.innerHTML = buildSavingsRateBars(totals);
 
   // ── Debt Summary Cards ──
   const oweMap = {}, owedMap = {};
@@ -3710,7 +3725,7 @@ function openCategoryDetail(cat, ym) {
     (e.category || e.source || '') === cat
   ).sort((a,b) => b.createdAt - a.createdAt);
 
-  document.getElementById('catDetailTitle').textContent = cat;
+  document.getElementById('catDetailTitle').textContent = getFinCatEmoji(cat) + ' ' + cat;
 
   // Totals per currency
   const totByCur = {};
@@ -3817,7 +3832,7 @@ function renderDataPage() {
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;">
         <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:0.05em;">Debt Records</div>
         <div style="font-size:22px;font-weight:800;color:var(--text);margin-top:4px;">${txLen}</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:2px;">⏳ ${active} active · ✅ ${settled} settled</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px;">${active} active · ${settled} settled</div>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;">
         <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:0.05em;">Finance Entries</div>
@@ -4117,7 +4132,7 @@ function renderFinancePage() {
     incEl.innerHTML = `<span class="fin-cur">${incCurs[0]}</span>${fmt(totals.incByCur[incCurs[0]])}`;
   } else {
     incEl.innerHTML = incCurs.map(c =>
-      `<span style="display:block;font-size:12px;margin-top:2px;"><span style="opacity:0.7;font-size:10px;">${c}</span> ${fmt(totals.incByCur[c])}</span>`
+      `<span style="display:block;font-size:13px;margin-top:1px;"><span style="opacity:0.7;font-size:11px;margin-right:3px;">${c}</span>${fmt(totals.incByCur[c])}</span>`
     ).join('');
   }
 
@@ -4130,38 +4145,33 @@ function renderFinancePage() {
     expEl.innerHTML = `<span class="fin-cur">${expCurs[0]}</span>${fmt(totals.expByCur[expCurs[0]])}`;
   } else {
     expEl.innerHTML = expCurs.map(c =>
-      `<span style="display:block;font-size:12px;margin-top:2px;"><span style="opacity:0.7;font-size:10px;">${c}</span> ${fmt(totals.expByCur[c])}</span>`
+      `<span style="display:block;font-size:13px;margin-top:1px;"><span style="opacity:0.7;font-size:11px;margin-right:3px;">${c}</span>${fmt(totals.expByCur[c])}</span>`
     ).join('');
   }
 
-  // ── Savings — per-currency, works for any number of currencies ──
+  // ── Savings — per-currency ──
   const savEl = document.getElementById('finTotalSavings');
   const savCurs = totals.allCurs;
 
   if (savCurs.length === 0) {
-    savEl.innerHTML = '<span style="color:var(--text3)">—</span>';
-    savEl.style.color = '';
-    document.getElementById('finSavingsRate').textContent = '0%';
-    document.getElementById('finSavingsBar').style.width = '0%';
+    savEl.innerHTML = '<span style="opacity:0.5">—</span>';
   } else if (savCurs.length === 1) {
     const c = savCurs[0];
     const s = totals.savingsByCur[c];
-    savEl.innerHTML = `<span class="fin-cur">${c}</span>${fmt(Math.abs(s))}`;
-    savEl.style.color = s >= 0 ? 'var(--accent2)' : 'var(--red)';
-    const rate = totals.incByCur[c] > 0 ? Math.max(0, Math.min(100, Math.round((s/totals.incByCur[c])*100))) : 0;
-    document.getElementById('finSavingsRate').textContent = `${rate}%`;
-    document.getElementById('finSavingsBar').style.width = rate + '%';
+    const sign = s < 0 ? '−' : '';
+    savEl.innerHTML = `<span class="fin-cur">${c}</span>${sign}${fmt(Math.abs(s))}`;
   } else {
     savEl.innerHTML = savCurs.map(c => {
       const s = totals.savingsByCur[c];
-      const color = s >= 0 ? 'var(--accent2)' : 'var(--red)';
       const sign = s < 0 ? '−' : '';
-      return `<span style="display:block;font-size:12px;margin-top:2px;"><span style="opacity:0.7;font-size:10px;">${c}</span> <span style="color:${color}">${sign}${fmt(Math.abs(s))}</span></span>`;
+      return `<span style="display:block;font-size:13px;margin-top:1px;"><span style="opacity:0.7;font-size:11px;margin-right:3px;">${c}</span>${sign}${fmt(Math.abs(s))}</span>`;
     }).join('');
-    savEl.style.color = '';
-    document.getElementById('finSavingsRate').textContent = '—';
-    document.getElementById('finSavingsBar').style.width = '0%';
   }
+  savEl.style.color = '';
+
+  // Savings rate bars — one per currency, rendered inside the blue fin-hero card
+  const finRateWrap = document.getElementById('finSavingsRateWrap');
+  if (finRateWrap) finRateWrap.innerHTML = buildSavingsRateBars(totals);
 
   // ── Entry list ──
   const finQ = (document.getElementById('finSearch')?.value || '').toLowerCase().trim();
@@ -4219,10 +4229,10 @@ function renderFinancePage() {
     } else {
       grid.innerHTML = `<div class="cat-grid">${sorted.map(([cat, data])=>`
         <div class="cat-card" onclick="openCategoryDetail('${escJsAttr(cat)}','${escJsAttr(finViewMonth)}')" style="cursor:pointer;">
-          <div class="cat-icon">${cat.split(' ')[0]}</div>
-          <div class="cat-name">${cat.split(' ').slice(1).join(' ')}</div>
-          <div class="cat-amount">${Object.entries(data.byCur).map(([c,a])=>`${c} ${fmt(a)}`).join('<br>')}</div>
-          <div style="font-size:10px;color:var(--text3);margin-top:4px;">${data.entries.length} entr${data.entries.length!==1?'ies':'y'} →</div>
+          <div class="cat-icon">${getFinCatEmoji(cat)}</div>
+          <div class="cat-name">${escHtml(cat)}</div>
+          <div class="cat-amount">${Object.entries(data.byCur).map(([c,a])=>`<span style="display:block;"><span style="font-size:11px;opacity:0.7;margin-right:2px;">${c}</span>${fmt(a)}</span>`).join('')}</div>
+          <div class="cat-count">${data.entries.length} entr${data.entries.length!==1?'ies':'y'} →</div>
         </div>`).join('')}</div>`;
     }
   }
@@ -4414,21 +4424,55 @@ function setQuickMode(mode) {
         onmousedown="openAddCategoryFromQE('${mode}')"
         ontouchstart="openAddCategoryFromQE('${mode}')">+ Add</button>`;
 
-    // Drag-to-reorder on desktop
-    let dragSrc = null;
+    // Touch-friendly reorder: long-press chip, then tap another to swap positions
+    let pressTimer = null, dragSource = null;
+
     scroll.querySelectorAll('.qe-cat-chip[data-cat]').forEach(chip => {
+      // Desktop drag
       chip.draggable = true;
-      chip.addEventListener('dragstart', () => { dragSrc = chip; chip.style.opacity='0.4'; });
-      chip.addEventListener('dragend', () => { chip.style.opacity=''; _saveCatChipOrder(scroll, mode); dragSrc = null; });
+      chip.addEventListener('dragstart', () => { dragSource = chip; chip.style.opacity='0.5'; });
+      chip.addEventListener('dragend', () => { chip.style.opacity=''; _saveCatChipOrder(scroll, mode); dragSource = null; });
       chip.addEventListener('dragover', e => e.preventDefault());
       chip.addEventListener('drop', e => {
         e.preventDefault();
-        if (dragSrc && dragSrc !== chip) {
+        if (dragSource && dragSource !== chip) {
           const chips = [...scroll.querySelectorAll('.qe-cat-chip[data-cat]')];
-          if (chips.indexOf(dragSrc) < chips.indexOf(chip)) chip.after(dragSrc);
-          else chip.before(dragSrc);
+          if (chips.indexOf(dragSource) < chips.indexOf(chip)) chip.after(dragSource);
+          else chip.before(dragSource);
         }
       });
+
+      // Mobile: long-press to enter "move mode", then tap target to swap
+      chip.addEventListener('touchstart', e => {
+        pressTimer = setTimeout(() => {
+          pressTimer = null;
+          // Enter move mode
+          if (dragSource) { dragSource.style.outline=''; dragSource = null; }
+          dragSource = chip;
+          chip.style.outline = '2px solid var(--accent)';
+          chip.style.opacity = '0.7';
+          // Provide haptic if available
+          if (navigator.vibrate) navigator.vibrate(40);
+        }, 500);
+      }, { passive: true });
+
+      chip.addEventListener('touchend', () => {
+        if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; return; }
+        // If in move mode and this is a different chip, swap
+        if (dragSource && dragSource !== chip) {
+          const chips = [...scroll.querySelectorAll('.qe-cat-chip[data-cat]')];
+          const si = chips.indexOf(dragSource), ti = chips.indexOf(chip);
+          if (si > -1 && ti > -1) {
+            if (si < ti) chip.after(dragSource); else chip.before(dragSource);
+            _saveCatChipOrder(scroll, mode);
+          }
+          dragSource.style.outline=''; dragSource.style.opacity=''; dragSource = null;
+        }
+      }, { passive: true });
+
+      chip.addEventListener('touchmove', () => {
+        if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+      }, { passive: true });
     });
   }
 }
