@@ -433,11 +433,12 @@ nav {
 .fin-month-row { display:flex; align-items:center; gap:8px; margin-bottom:14px; }
 .fin-month-btn { width:28px; height:28px; border-radius:8px; background:var(--surface2); border:1px solid var(--border2); display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text2); flex-shrink:0; }
 .fin-month-label { flex:1; text-align:center; font-size:14px; font-weight:600; color:var(--text); }
-.fin-totals { display:flex; gap:0; }
-.fin-total-item { flex:1; padding-right:12px; }
-.fin-total-item + .fin-total-item { border-left:1px solid var(--border); padding-left:12px; padding-right:8px; }
-.fin-total-label { font-size:10px; color:var(--text2); text-transform:uppercase; letter-spacing:0.06em; font-weight:600; }
-.fin-total-val { font-size:15px; font-weight:700; margin-top:4px; line-height:1.2; word-break:break-word; }
+.fin-totals { display:flex; flex-direction:column; gap:0; }
+.fin-total-item { display:flex; align-items:baseline; justify-content:space-between; background:rgba(255,255,255,0.10); border-radius:10px; padding:9px 12px; margin-bottom:6px; }
+.fin-total-item:last-child { margin-bottom:0; }
+.fin-total-item + .fin-total-item { border-left:none; padding-left:12px; }
+.fin-total-label { font-size:12px; color:rgba(255,255,255,0.75); font-weight:600; flex-shrink:0; margin-right:8px; }
+.fin-total-val { font-size:15px; font-weight:700; margin-top:0; line-height:1.35; white-space:nowrap; text-align:right; color:#ffffff; }
 .fin-total-val .fin-cur { font-size:11px; font-weight:600; opacity:0.8; display:inline; margin-right:3px; }
 .fin-total-item.income .fin-total-val { color: #ffffff; }
 .fin-total-item.expense .fin-total-val { color: #ffffff; }
@@ -819,20 +820,20 @@ nav {
 
 .dfh-row,
 .fin-totals {
-  gap: 12px;
+  gap: 6px;
 }
 
 .dfh-item,
 .fin-total-item {
-  background: rgba(255,255,255,0.035);
-  border: 1px solid rgba(255,255,255,0.055);
-  border-radius: 8px;
-  padding: 10px;
+  background: rgba(255,255,255,0.10);
+  border: none;
+  border-radius: 10px;
+  padding: 9px 12px;
 }
 
 .dfh-item + .dfh-item {
-  border-left: 1px solid rgba(255,255,255,0.055);
-  padding-left: 10px !important;
+  border-left: none;
+  padding-left: 12px !important;
 }
 
 .dfh-val,
@@ -1066,11 +1067,6 @@ textarea:focus-visible,
     grid-template-columns: repeat(2, 1fr) !important;
   }
 
-  .dfh-row,
-  .fin-totals {
-    flex-direction: column;
-  }
-
   .dfh-item + .dfh-item {
     border-left: none;
   }
@@ -1200,7 +1196,7 @@ body {
 
 .dash-finance-hero {
   margin: 2px 28px 18px;
-  padding: 24px 22px;
+  padding: 28px 22px 22px;
   background: linear-gradient(135deg, #1971e8 0%, #145fca 100%) !important;
   border: none;
   border-radius: 18px;
@@ -1209,36 +1205,89 @@ body {
 }
 
 .dfh-month {
-  color: rgba(255,255,255,0.8);
-  font-size: 12px;
-  font-weight: 650;
+  color: rgba(255,255,255,0.85);
+  font-size: 14px;
+  font-weight: 700;
   letter-spacing: 0;
   text-transform: none;
+  text-align: center;
+  margin-bottom: 16px;
 }
 
-.dfh-row {
-  gap: 10px;
+/* ── Blue card layout: vertical rows instead of 3 cramped columns ── */
+.dfh-row,
+.fin-totals {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
-.dfh-item {
-  background: rgba(255,255,255,0.14);
-  border: 1px solid rgba(255,255,255,0.18);
-  border-radius: 13px;
-  padding: 11px 10px !important;
+.dfh-item,
+.fin-total-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  background: rgba(255,255,255,0.10);
+  border: none;
+  border-radius: 10px;
+  padding: 9px 12px !important;
+  margin-bottom: 6px;
+  min-width: 0;
+  overflow: visible;
 }
 
-.dfh-item + .dfh-item {
-  border-left: 1px solid rgba(255,255,255,0.18);
+.dfh-item:last-child,
+.fin-total-item:last-child {
+  margin-bottom: 0;
+}
+
+.dfh-item + .dfh-item,
+.fin-total-item + .fin-total-item {
+  border-left: none;
+  padding-left: 12px;
 }
 
 .dfh-label,
 .fin-total-label {
-  color: rgba(255,255,255,0.8);
+  color: rgba(255,255,255,0.75);
   font-size: 12px;
-  letter-spacing: 0;
-  text-transform: none;
-  font-weight: 700;
+  font-weight: 600;
+  flex-shrink: 0;
+  margin-right: 8px;
 }
+
+.dfh-val,
+.ddc-amount,
+.fin-total-val {
+  color: #ffffff !important;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: right;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: visible;
+  word-break: normal;
+}
+
+/* Currency label inline before amount */
+.dfh-cur,
+.fin-cur {
+  display: inline;
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.75;
+  margin-right: 3px;
+  vertical-align: baseline;
+}
+
+/* Multi-currency stacked amounts — each line right-aligned */
+.dfh-val span[style*="display:block"],
+.fin-total-val span[style*="display:block"] {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.dfh-sub { font-size:10px; color:rgba(255,255,255,0.6); margin-top:2px; text-align:right; }
 
 .ddc-label,
 .section-title,
@@ -1250,36 +1299,7 @@ body {
   font-weight: 700;
 }
 
-.dfh-val,
 .ddc-amount,
-.fin-total-val {
-  color: #ffffff !important;
-  font-size: 15px;
-  font-weight: 850;
-}
-
-/* Fix 1: currency label on same line as amount — inline not block */
-.dfh-cur,
-.fin-cur {
-  display: inline;
-  font-size: 11px;
-  font-weight: 600;
-  opacity: 0.75;
-  margin-right: 3px;
-  vertical-align: baseline;
-}
-
-.dfh-val,
-.fin-total-val {
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.4;
-  overflow: hidden;
-  word-break: break-word;
-  color: #ffffff;
-}
-
-.dfh-sub,
 .ddc-count {
   color: rgba(255,255,255,0.6);
 }
@@ -1502,8 +1522,8 @@ body {
 }
 
 .fin-total-item {
-  background: rgba(255,255,255,0.14);
-  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.10);
+  border: none;
 }
 
 .savings-bar-wrap,
@@ -1864,21 +1884,18 @@ textarea:focus-visible,
     <!-- Monthly Finance Hero -->
     <div class="dash-finance-hero">
       <div class="dfh-month" id="dashFinMonth"></div>
-      <div class="dfh-row">
-        <div class="dfh-item">
-          <div class="dfh-label">Income</div>
-          <div class="dfh-val income" id="dashIncome">—</div>
-          <div class="dfh-sub" id="dashIncomeSub"></div>
+      <div class="fin-totals">
+        <div class="fin-total-item income">
+          <div class="fin-total-label">Income</div>
+          <div class="fin-total-val" id="dashIncome">—</div>
         </div>
-        <div class="dfh-item" style="padding-left:16px;">
-          <div class="dfh-label">Spent</div>
-          <div class="dfh-val expense" id="dashExpense">—</div>
-          <div class="dfh-sub" id="dashExpenseSub"></div>
+        <div class="fin-total-item expense">
+          <div class="fin-total-label">Spent</div>
+          <div class="fin-total-val" id="dashExpense">—</div>
         </div>
-        <div class="dfh-item" style="padding-left:16px;">
-          <div class="dfh-label">Saved</div>
-          <div class="dfh-val saved" id="dashSaved">—</div>
-          <div class="dfh-sub" id="dashSavedSub"></div>
+        <div class="fin-total-item savings">
+          <div class="fin-total-label">Saved</div>
+          <div class="fin-total-val" id="dashSaved">—</div>
         </div>
       </div>
       <div id="dashSavingsRateWrap" style="margin-top:12px;"></div>
@@ -2822,63 +2839,46 @@ function renderDashboard() {
   const incCurs = Object.keys(totals.incByCur);
   const expCurs = Object.keys(totals.expByCur);
 
-  // Income display — match Finance page style (stacked, currency prefix shown)
+  // Use exact same rendering as finance card
   const dashIncEl = document.getElementById('dashIncome');
-  const dashIncSubEl = document.getElementById('dashIncomeSub');
   if (incCurs.length === 0) {
-    dashIncEl.innerHTML = '<span style="color:var(--text3)">—</span>';
-    dashIncSubEl.textContent = 'none logged';
+    dashIncEl.innerHTML = '<span style="opacity:0.5">—</span>';
   } else if (incCurs.length === 1) {
-    dashIncEl.innerHTML = `<span class="dfh-cur">${incCurs[0]}</span>${fmt(totals.incByCur[incCurs[0]])}`;
-    dashIncSubEl.textContent = '';
+    dashIncEl.innerHTML = `<span class="fin-cur">${incCurs[0]}</span>${fmt(totals.incByCur[incCurs[0]])}`;
   } else {
     dashIncEl.innerHTML = incCurs.map(c =>
-      `<span style="display:block;"><span class="dfh-cur" style="margin-bottom:0;">${c}</span>${fmt(totals.incByCur[c])}</span>`
+      `<span style="display:block;font-size:13px;margin-top:1px;"><span style="opacity:0.7;font-size:11px;margin-right:3px;">${c}</span>${fmt(totals.incByCur[c])}</span>`
     ).join('');
-    dashIncSubEl.textContent = '';
   }
 
-  // Expense display
   const dashExpEl = document.getElementById('dashExpense');
-  const dashExpSubEl = document.getElementById('dashExpenseSub');
   if (expCurs.length === 0) {
-    dashExpEl.innerHTML = '<span style="color:var(--text3)">—</span>';
-    dashExpSubEl.textContent = 'none logged';
+    dashExpEl.innerHTML = '<span style="opacity:0.5">—</span>';
   } else if (expCurs.length === 1) {
-    dashExpEl.innerHTML = `<span class="dfh-cur">${expCurs[0]}</span>${fmt(totals.expByCur[expCurs[0]])}`;
-    dashExpSubEl.textContent = '';
+    dashExpEl.innerHTML = `<span class="fin-cur">${expCurs[0]}</span>${fmt(totals.expByCur[expCurs[0]])}`;
   } else {
     dashExpEl.innerHTML = expCurs.map(c =>
-      `<span style="display:block;"><span class="dfh-cur" style="margin-bottom:0;">${c}</span>${fmt(totals.expByCur[c])}</span>`
+      `<span style="display:block;font-size:13px;margin-top:1px;"><span style="opacity:0.7;font-size:11px;margin-right:3px;">${c}</span>${fmt(totals.expByCur[c])}</span>`
     ).join('');
-    dashExpSubEl.textContent = '';
   }
 
-  // ── Saved — per-currency, matches income/expense stacked style ──
   const dashSavedEl = document.getElementById('dashSaved');
   const savCurs = totals.allCurs;
-
   if (savCurs.length === 0) {
     dashSavedEl.innerHTML = '<span style="opacity:0.5">—</span>';
-    dashSavedEl.style.color = '';
-    document.getElementById('dashSavedSub').textContent = 'no data';
   } else if (savCurs.length === 1) {
     const c = savCurs[0];
     const saved = totals.savingsByCur[c];
     const sign = saved < 0 ? '−' : '';
-    dashSavedEl.innerHTML = `<span class="dfh-cur">${c}</span>${sign}${fmt(Math.abs(saved))}`;
-    dashSavedEl.style.color = '';
-    const rate = totals.incByCur[c] > 0 ? Math.round((saved / totals.incByCur[c]) * 100) : 0;
-    document.getElementById('dashSavedSub').textContent = saved < 0 ? 'overspent' : `${Math.max(0,rate)}% saved`;
+    dashSavedEl.innerHTML = `<span class="fin-cur">${c}</span>${sign}${fmt(Math.abs(saved))}`;
   } else {
     dashSavedEl.innerHTML = savCurs.map(c => {
       const saved = totals.savingsByCur[c];
       const sign = saved < 0 ? '−' : '';
       return `<span style="display:block;font-size:13px;margin-top:1px;"><span style="opacity:0.7;font-size:11px;margin-right:3px;">${c}</span>${sign}${fmt(Math.abs(saved))}</span>`;
     }).join('');
-    dashSavedEl.style.color = '';
-    document.getElementById('dashSavedSub').textContent = '';
   }
+  dashSavedEl.style.color = '';
 
   // Savings rate bars — one per currency inside the blue card
   const dashRateWrap = document.getElementById('dashSavingsRateWrap');
