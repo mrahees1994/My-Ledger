@@ -531,7 +531,12 @@ nav {
 .qe-cat-chip { flex-shrink:0; padding:6px 12px; border-radius:20px; background:var(--surface2); border:1px solid var(--border2); color:var(--text2); font-size:12px; font-weight:500; cursor:pointer; white-space:nowrap; transition:all 0.15s; font-family:inherit; }
 .qe-cat-chip.active { background:var(--accent); border-color:var(--accent); color:white; }
 
-/* Remittance extra fields in QE */
+.qe-cat-chip {
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+  touch-action: pan-x; /* allow horizontal scroll, block vertical to avoid conflict */
+}
 .qe-remittance-section { padding:0 16px 10px; display:none; }
 .qe-remittance-section.show { display:block; }
 .qe-remittance-row { display:flex; gap:8px; margin-bottom:8px; }
@@ -4471,18 +4476,27 @@ function setQuickMode(mode) {
           touchDragging = true;
           dragSrc = chip;
           chip.style.opacity = '0.4';
+          chip.style.touchAction = 'none';
+          chip.draggable = false;
           if (navigator.vibrate) navigator.vibrate(40);
+          // Clear any iOS text selection triggered by the long press
+          if (window.getSelection) window.getSelection().removeAllRanges();
 
-          // Create a floating clone that follows the finger
-          clone = chip.cloneNode(true);
+          // Create a clean floating clone (not a DOM clone — avoids null/title artifacts)
           const r = chip.getBoundingClientRect();
+          clone = document.createElement('div');
+          clone.textContent = chip.textContent.trim();
           Object.assign(clone.style, {
             position:'fixed', left:r.left+'px', top:r.top+'px',
             width:r.width+'px', height:r.height+'px',
             pointerEvents:'none', zIndex:'9999',
-            opacity:'0.9', boxShadow:'0 8px 20px rgba(0,0,0,0.25)',
-            transform:'scale(1.05)', transition:'transform 0.1s',
-            borderRadius: getComputedStyle(chip).borderRadius
+            display:'flex', alignItems:'center', justifyContent:'center',
+            background:'var(--accent)', color:'#ffffff',
+            fontSize:'13px', fontWeight:'700', fontFamily:'inherit',
+            borderRadius:'20px', padding:'0 14px',
+            boxShadow:'0 8px 20px rgba(109,53,255,0.4)',
+            transform:'scale(1.08)',
+            whiteSpace:'nowrap', overflow:'hidden'
           });
           document.body.appendChild(clone);
         }, 400);
@@ -4517,6 +4531,8 @@ function setQuickMode(mode) {
         if (clone) { clone.remove(); clone = null; }
         if (touchDragging) {
           dragSrc.style.opacity = '';
+          dragSrc.style.touchAction = '';
+          dragSrc.draggable = true;
           _saveCatChipOrder(scroll, mode);
           touchDragging = false;
           dragSrc = null;
@@ -4526,7 +4542,7 @@ function setQuickMode(mode) {
       chip.addEventListener('touchcancel', () => {
         if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
         if (clone) { clone.remove(); clone = null; }
-        if (dragSrc) { dragSrc.style.opacity = ''; dragSrc = null; }
+        if (dragSrc) { dragSrc.style.opacity = ''; dragSrc.style.touchAction = ''; dragSrc.draggable = true; dragSrc = null; }
         touchDragging = false;
       }, { passive: true });
     });
@@ -4548,12 +4564,19 @@ function saveCatOrder(mode, cats) {
 function getOrderedCats(mode) {
   const baseCats = mode === 'income' ? QE_INCOME_CATS : QE_EXPENSE_CATS;
   const customCats = mode === 'income' ? getCustomCats('Income') : getCustomCats('Expense');
-  const all = [...baseCats];
-  customCats.forEach(c => { if (!all.includes(c)) all.push(c); });
+
+  // Normalize all to plain name (strip any emoji prefix) — this is what chips store as data-cat
+  const all = [...baseCats.map(stripCatEmoji)];
+  customCats.forEach(c => {
+    const plain = stripCatEmoji(c);
+    if (plain && !all.includes(plain)) all.push(plain);
+  });
+
   const savedOrder = getCatOrder(mode);
   if (savedOrder && Array.isArray(savedOrder)) {
-    // Apply saved order: put saved items first in their order, then any new ones at end
+    // savedOrder contains plain names; filter to only those still in all
     const ordered = savedOrder.filter(c => all.includes(c));
+    // Append any new cats not yet in saved order
     all.forEach(c => { if (!ordered.includes(c)) ordered.push(c); });
     return ordered;
   }
