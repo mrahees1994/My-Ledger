@@ -438,7 +438,8 @@ nav {
 .fin-total-item:last-child { margin-bottom:0; }
 .fin-total-item + .fin-total-item { border-left:none; padding-left:12px; }
 .fin-total-label { font-size:12px; color:rgba(255,255,255,0.75); font-weight:600; flex-shrink:0; margin-right:8px; }
-.fin-total-val { font-size:15px; font-weight:700; margin-top:0; line-height:1.35; white-space:nowrap; text-align:right; color:#ffffff; }
+.fin-total-val { font-size:15px; font-weight:700; margin-top:0; line-height:1.35; text-align:right; color:#ffffff; overflow:visible; min-width:0; }
+.fin-total-val table { color:#ffffff; width:100%; }
 .fin-total-val .fin-cur { font-size:11px; font-weight:600; opacity:0.8; display:inline; margin-right:3px; }
 .fin-total-item.income .fin-total-val { color: #ffffff; }
 .fin-total-item.expense .fin-total-val { color: #ffffff; }
@@ -584,7 +585,8 @@ nav {
 .dfh-item + .dfh-item { border-left:1px solid rgba(255,255,255,0.15); padding-left:12px; padding-right:8px; }
 .dfh-label { font-size:10px; color:rgba(255,255,255,0.75); font-weight:700; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:3px; }
 .dfh-cur { font-size:11px; color:rgba(255,255,255,0.7); font-weight:600; display:block; margin-bottom:1px; }
-.dfh-val { font-size:15px; font-weight:700; line-height:1.2; overflow:hidden; word-break:break-word; color:#ffffff; }
+.dfh-val { font-size:15px; font-weight:700; line-height:1.35; overflow:visible; color:#ffffff; }
+.dfh-val table, .fin-total-val table { color:#ffffff; width:100%; }
 .dfh-val.income { color:#ffffff; }
 .dfh-val.expense { color:#ffffff; }
 .dfh-val.saved { color:#ffffff; }
@@ -2323,11 +2325,19 @@ textarea:focus-visible,
     </div>
     <div class="modal-body">
       <input type="hidden" id="newCatType">
-      <input type="hidden" id="newCatEmoji">
-      <div class="field">
-        <label>Category Name</label>
-        <input type="text" id="newCatName" placeholder="e.g. Pets, Subscriptions">
+      <div class="amount-row" style="gap:10px;">
+        <div class="field" style="flex:0 0 72px;">
+          <label>Emoji</label>
+          <input type="text" id="newCatEmoji" placeholder="📦" maxlength="4"
+            style="text-align:center;font-size:22px;padding:8px 4px;cursor:pointer;"
+            onclick="this.select()" onfocus="this.select()">
+        </div>
+        <div class="field" style="flex:1;">
+          <label>Category Name</label>
+          <input type="text" id="newCatName" placeholder="e.g. Pets, Subscriptions">
+        </div>
       </div>
+      <div id="catEmojiPicker" style="display:flex;flex-wrap:wrap;gap:6px;margin:-4px 0 14px;"></div>
       <button class="btn-primary" onclick="saveCustomCategory()">Add Category</button>
       <div style="height:12px"></div>
     </div>
@@ -2781,12 +2791,17 @@ function confirmAction(title, msg, cb) {
 }
 
 function getFinCatEmoji(cat) {
-  const plain = String(cat||'').replace(/^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)\s*/u,'').trim().toLowerCase();
+  const str = String(cat||'').trim();
+  // Check if the string starts with an emoji (user-provided custom emoji)
+  const emojiMatch = str.match(/^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)/u);
+  if (emojiMatch) return emojiMatch[0];
+  // Fall back to built-in map by plain name
+  const plain = str.toLowerCase();
   const map = {
     income:'💰', salary:'💼', freelance:'🧑‍💻', business:'🏢', gift:'🎁', rental:'🏘️', investment:'📊',
     food:'🍔', transport:'🚗', housing:'🏠', health:'💊', shopping:'👕',
     bills:'📱', education:'🎓', travel:'✈️', family:'👨‍👩‍👧', charity:'🕌',
-    entertainment:'🎮', other:'📦', expense:'📉', remittance:'🔄'
+    entertainment:'🎮', other:'📦', expense:'📉', remittance:'🔄', grocery:'🛒'
   };
   return map[plain] || map[plain.split(' ').pop()] || '📦';
 }
@@ -2836,49 +2851,18 @@ function renderDashboard() {
     now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
   const totals = getMonthTotals(ym);
-  const incCurs = Object.keys(totals.incByCur);
-  const expCurs = Object.keys(totals.expByCur);
+  const incCurs = sortCursByPrimary(Object.keys(totals.incByCur));
+  const expCurs = sortCursByPrimary(Object.keys(totals.expByCur));
 
-  // Use exact same rendering as finance card
-  const dashIncEl = document.getElementById('dashIncome');
-  if (incCurs.length === 0) {
-    dashIncEl.innerHTML = '<span style="opacity:0.5">—</span>';
-  } else if (incCurs.length === 1) {
-    dashIncEl.innerHTML = `<span class="fin-cur">${incCurs[0]}</span>${fmt(totals.incByCur[incCurs[0]])}`;
-  } else {
-    dashIncEl.innerHTML = incCurs.map(c =>
-      `<span style="display:block;font-size:13px;margin-top:1px;"><span style="opacity:0.7;font-size:11px;margin-right:3px;">${c}</span>${fmt(totals.incByCur[c])}</span>`
-    ).join('');
-  }
+  document.getElementById('dashIncome').innerHTML =
+    fmtCurAmountGrid(totals.incByCur, incCurs, 'pos');
+  document.getElementById('dashExpense').innerHTML =
+    fmtCurAmountGrid(totals.expByCur, expCurs, 'pos');
 
-  const dashExpEl = document.getElementById('dashExpense');
-  if (expCurs.length === 0) {
-    dashExpEl.innerHTML = '<span style="opacity:0.5">—</span>';
-  } else if (expCurs.length === 1) {
-    dashExpEl.innerHTML = `<span class="fin-cur">${expCurs[0]}</span>${fmt(totals.expByCur[expCurs[0]])}`;
-  } else {
-    dashExpEl.innerHTML = expCurs.map(c =>
-      `<span style="display:block;font-size:13px;margin-top:1px;"><span style="opacity:0.7;font-size:11px;margin-right:3px;">${c}</span>${fmt(totals.expByCur[c])}</span>`
-    ).join('');
-  }
-
-  const dashSavedEl = document.getElementById('dashSaved');
   const savCurs = totals.allCurs;
-  if (savCurs.length === 0) {
-    dashSavedEl.innerHTML = '<span style="opacity:0.5">—</span>';
-  } else if (savCurs.length === 1) {
-    const c = savCurs[0];
-    const saved = totals.savingsByCur[c];
-    const sign = saved < 0 ? '−' : '';
-    dashSavedEl.innerHTML = `<span class="fin-cur">${c}</span>${sign}${fmt(Math.abs(saved))}`;
-  } else {
-    dashSavedEl.innerHTML = savCurs.map(c => {
-      const saved = totals.savingsByCur[c];
-      const sign = saved < 0 ? '−' : '';
-      return `<span style="display:block;font-size:13px;margin-top:1px;"><span style="opacity:0.7;font-size:11px;margin-right:3px;">${c}</span>${sign}${fmt(Math.abs(saved))}</span>`;
-    }).join('');
-  }
-  dashSavedEl.style.color = '';
+  document.getElementById('dashSaved').innerHTML =
+    fmtCurAmountGrid(totals.savingsByCur, savCurs, 'saved');
+  document.getElementById('dashSaved').style.color = '';
 
   // Savings rate bars — one per currency inside the blue card
   const dashRateWrap = document.getElementById('dashSavingsRateWrap');
@@ -3546,10 +3530,6 @@ function printReport() {
 function doPrint(type) {
   closeModal('printOptionsModal');
 
-  // Build dynamic print content
-  const printWin = window.open('', '_blank', 'width=800,height=600');
-  if (!printWin) { toast('⚠️ Please allow popups to print'); return; }
-
   const now = new Date();
   const dateStr = now.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
 
@@ -3666,11 +3646,37 @@ function doPrint(type) {
     </table></div>`;
   }
 
-  content += `<div class="footer">My Ledger · Printed ${dateStr}</div></body></html>`;
+  content += `<div class="footer">My Ledger · Printed ${dateStr}</div>
+  <!-- iOS-friendly back button -->
+  <div class="no-print" style="position:fixed;top:16px;right:16px;z-index:9999;">
+    <button onclick="window.close()" style="background:#1971e8;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">✕ Close</button>
+  </div>
+  <style>.no-print { } @media print { .no-print { display:none !important; } }</style>
+  </body></html>`;
 
-  printWin.document.write(content);
-  printWin.document.close();
-  setTimeout(() => { printWin.focus(); printWin.print(); }, 400);
+  // Use blob URL — works on iOS Safari without popup blocker issues
+  const blob = new Blob([content], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+
+  // On iOS, open in same tab is smoother; on desktop open new tab
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  if (isIOS) {
+    // Open in current tab — user can use back button to return
+    window.location.href = url;
+  } else {
+    const win = window.open(url, '_blank');
+    if (!win) {
+      // Popup blocked — fallback to download
+      a.href = url;
+      a.download = `MyLedger_${type}_report.html`;
+      a.click();
+      toast('📄 Report downloaded — open to print');
+    } else {
+      setTimeout(() => { win.print(); }, 500);
+    }
+  }
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
 // ══════════════════════════════════════════════
@@ -3721,13 +3727,20 @@ function openAllActivity() {
 //  CATEGORY DETAIL MODAL (Fix #2)
 // ══════════════════════════════════════════════
 function openCategoryDetail(cat, ym) {
-  const entries = getMonthEntries(ym).filter(e =>
-    (e.category || e.source || '') === cat
+  const allEntries = getMonthEntries(ym).filter(e =>
+    (e.category || e.source || '') === cat && !e.isAutoRemittance
   ).sort((a,b) => b.createdAt - a.createdAt);
+
+  // Separate expenses from income (non-auto) for display
+  const expenseEntries = allEntries.filter(e => e.type === 'expense');
+  const incomeEntries  = allEntries.filter(e => e.type === 'income');
+
+  // Show expenses if any; otherwise income (e.g. Remittance income category)
+  const entries = expenseEntries.length > 0 ? expenseEntries : incomeEntries;
 
   document.getElementById('catDetailTitle').textContent = getFinCatEmoji(cat) + ' ' + cat;
 
-  // Totals per currency
+  // Totals per currency — only for the displayed entries
   const totByCur = {};
   entries.forEach(e => {
     const c = e.currency || 'AED';
@@ -3788,7 +3801,7 @@ function toggleTheme() {
 function renderDataPage() {
   const txLen = transactions.length;
   const finLen = finEntries.length;
-  const finIncome = finEntries.filter(e=>e.type==='income').length;
+  const finIncome = finEntries.filter(e=>e.type==='income' && !e.isAutoRemittance).length;
   const finExpense = finEntries.filter(e=>e.type==='expense').length;
   const settled = transactions.filter(t=>getTxStatus(t)==='settled').length;
   const active = txLen - settled;
@@ -4007,6 +4020,7 @@ function handleCatSelectChange(selectEl, type) {
     document.getElementById('newCatType').value = type;
     document.getElementById('newCatEmoji').value = '';
     document.getElementById('newCatName').value = '';
+    buildCatEmojiPicker();
     openModal('addCategoryModal');
     // Reset to first real option so the select doesn't stay on the placeholder
     selectEl.value = (type === 'income' ? getIncomeCats() : getExpenseCats())[0];
@@ -4016,30 +4030,29 @@ function handleCatSelectChange(selectEl, type) {
 // Save a new custom category from the modal
 function saveCustomCategory() {
   const type = document.getElementById('newCatType').value;
+  const emoji = document.getElementById('newCatEmoji').value.trim();
   const name = document.getElementById('newCatName').value.trim();
 
   if (!name) { toast('⚠️ Please enter a category name'); return; }
 
-  const newCat = name; // store plain name only — emoji shown from getFinCatEmoji at display time
+  // Store as "emoji name" so custom emoji is preserved; stripped when needed for lookup
+  const newCat = emoji ? `${emoji} ${name}` : name;
+  const plainName = name; // plain name for selects and matching
   const storeType = type === 'income' ? 'Income' : 'Expense';
   addCustomCat(storeType, newCat);
 
   populateCategorySelects();
-  if (document.getElementById('finSource') && getIncomeCats().includes(newCat) && type === 'income') {
-    document.getElementById('finSource').value = newCat;
+  if (document.getElementById('finSource') && type === 'income') {
+    document.getElementById('finSource').value = plainName;
   }
-  if (document.getElementById('finCategory') && getExpenseCats().includes(newCat) && type === 'expense') {
-    document.getElementById('finCategory').value = newCat;
+  if (document.getElementById('finCategory') && type === 'expense') {
+    document.getElementById('finCategory').value = plainName;
   }
 
   if (typeof qeMode !== 'undefined' && document.getElementById('quickEntryBar')?.classList.contains('open')) {
     if ((type==='income' && qeMode==='income') || (type==='expense' && qeMode==='expense')) {
       setQuickMode(qeMode);
-      qeCategory = newCat;
-      document.querySelectorAll('.qe-cat-chip').forEach(b => {
-        if (b.dataset.cat === newCat) b.classList.add('active');
-        else b.classList.remove('active');
-      });
+      qeCategory = plainName;
     }
   }
 
@@ -4056,19 +4069,57 @@ function getMonthEntries(ym) {
   return finEntries.filter(e => e.date && e.date.startsWith(ym));
 }
 
+// Render currency+amount pairs as a right-aligned two-column grid
+// cur column fixed-width, amount right-aligned — gives tabular symmetry
+function fmtCurAmountGrid(byCur, orderedCurs, sign) {
+  if (!orderedCurs || !orderedCurs.length) return '<span style="opacity:0.5">—</span>';
+  if (orderedCurs.length === 1) {
+    const c = orderedCurs[0];
+    const val = byCur[c] || 0;
+    const prefix = sign === 'neg' ? (val < 0 ? '−' : '') : (sign === 'saved' ? (val < 0 ? '−' : '') : '');
+    return `<span style="display:inline-flex;align-items:baseline;gap:4px;"><span style="font-size:11px;opacity:0.7;flex-shrink:0;">${c}</span><span style="font-size:15px;font-weight:700;">${prefix}${fmt(Math.abs(val))}</span></span>`;
+  }
+  return `<table style="width:100%;border-collapse:collapse;margin-top:1px;">
+    ${orderedCurs.map(c => {
+      const val = byCur[c] || 0;
+      const prefix = sign === 'saved' && val < 0 ? '−' : '';
+      return `<tr>
+        <td style="font-size:11px;opacity:0.7;padding:1px 6px 1px 0;white-space:nowrap;vertical-align:baseline;">${c}</td>
+        <td style="font-size:14px;font-weight:700;text-align:right;padding:1px 0;white-space:nowrap;vertical-align:baseline;">${prefix}${fmt(Math.abs(val))}</td>
+      </tr>`;
+    }).join('')}
+  </table>`;
+}
+
+function getPrimaryCurrency() {
+  // The currency of the very first finance entry ever logged = primary
+  if (!finEntries.length) return DB.get('lastCurrency') || 'AED';
+  const oldest = [...finEntries].sort((a,b) => a.createdAt - b.createdAt)[0];
+  return oldest.currency || 'AED';
+}
+
+function sortCursByPrimary(curs) {
+  const primary = getPrimaryCurrency();
+  return [...curs].sort((a,b) => {
+    if (a === primary) return -1;
+    if (b === primary) return 1;
+    return a.localeCompare(b);
+  });
+}
+
 function getMonthTotals(ym) {
   const entries = getMonthEntries(ym);
-  // Group by currency — never mix currencies
+  // Exclude isAutoRemittance entries (internal transfers)
   const incByCur = {}, expByCur = {};
   entries.forEach(e => {
+    if (e.isAutoRemittance) return;
     const cur = e.currency || 'AED';
     if (e.type === 'income') incByCur[cur] = (incByCur[cur]||0) + Number(e.amount||0);
     else expByCur[cur] = (expByCur[cur]||0) + Number(e.amount||0);
   });
-  // Single shared currency — can calculate a simple % rate
-  const incCurs = Object.keys(incByCur);
-  const expCurs = Object.keys(expByCur);
-  const allCurs = [...new Set([...incCurs, ...expCurs])];
+  const incCurs = sortCursByPrimary(Object.keys(incByCur));
+  const expCurs = sortCursByPrimary(Object.keys(expByCur));
+  const allCurs = sortCursByPrimary([...new Set([...incCurs, ...expCurs])]);
   const singleCur = allCurs.length === 1 ? allCurs[0] : null;
   const income = singleCur ? (incByCur[singleCur]||0) : 0;
   const expense = singleCur ? (expByCur[singleCur]||0) : 0;
@@ -4123,51 +4174,18 @@ function renderFinancePage() {
   document.getElementById('finMonthLabel').textContent = fmtMonthLabel(finViewMonth);
   document.getElementById('finSubtitle').textContent = fmtMonthLabel(finViewMonth);
 
-  // ── Income display ──
-  const incEl = document.getElementById('finTotalIncome');
-  const incCurs = Object.keys(totals.incByCur);
-  if (incCurs.length === 0) {
-    incEl.innerHTML = '<span style="color:var(--text3)">—</span>';
-  } else if (incCurs.length === 1) {
-    incEl.innerHTML = `<span class="fin-cur">${incCurs[0]}</span>${fmt(totals.incByCur[incCurs[0]])}`;
-  } else {
-    incEl.innerHTML = incCurs.map(c =>
-      `<span style="display:block;font-size:13px;margin-top:1px;"><span style="opacity:0.7;font-size:11px;margin-right:3px;">${c}</span>${fmt(totals.incByCur[c])}</span>`
-    ).join('');
-  }
+  // ── Income / Expense / Saved — aligned two-column grid ──
+  const incCurs = sortCursByPrimary(Object.keys(totals.incByCur));
+  const expCurs = sortCursByPrimary(Object.keys(totals.expByCur));
+  const savCurs = totals.allCurs; // already sorted by getMonthTotals
 
-  // ── Expense display ──
-  const expEl = document.getElementById('finTotalExpense');
-  const expCurs = Object.keys(totals.expByCur);
-  if (expCurs.length === 0) {
-    expEl.innerHTML = '<span style="color:var(--text3)">—</span>';
-  } else if (expCurs.length === 1) {
-    expEl.innerHTML = `<span class="fin-cur">${expCurs[0]}</span>${fmt(totals.expByCur[expCurs[0]])}`;
-  } else {
-    expEl.innerHTML = expCurs.map(c =>
-      `<span style="display:block;font-size:13px;margin-top:1px;"><span style="opacity:0.7;font-size:11px;margin-right:3px;">${c}</span>${fmt(totals.expByCur[c])}</span>`
-    ).join('');
-  }
-
-  // ── Savings — per-currency ──
-  const savEl = document.getElementById('finTotalSavings');
-  const savCurs = totals.allCurs;
-
-  if (savCurs.length === 0) {
-    savEl.innerHTML = '<span style="opacity:0.5">—</span>';
-  } else if (savCurs.length === 1) {
-    const c = savCurs[0];
-    const s = totals.savingsByCur[c];
-    const sign = s < 0 ? '−' : '';
-    savEl.innerHTML = `<span class="fin-cur">${c}</span>${sign}${fmt(Math.abs(s))}`;
-  } else {
-    savEl.innerHTML = savCurs.map(c => {
-      const s = totals.savingsByCur[c];
-      const sign = s < 0 ? '−' : '';
-      return `<span style="display:block;font-size:13px;margin-top:1px;"><span style="opacity:0.7;font-size:11px;margin-right:3px;">${c}</span>${sign}${fmt(Math.abs(s))}</span>`;
-    }).join('');
-  }
-  savEl.style.color = '';
+  document.getElementById('finTotalIncome').innerHTML =
+    fmtCurAmountGrid(totals.incByCur, incCurs, 'pos');
+  document.getElementById('finTotalExpense').innerHTML =
+    fmtCurAmountGrid(totals.expByCur, expCurs, 'pos');
+  document.getElementById('finTotalSavings').innerHTML =
+    fmtCurAmountGrid(totals.savingsByCur, savCurs, 'saved');
+  document.getElementById('finTotalSavings').style.color = '';
 
   // Savings rate bars — one per currency, rendered inside the blue fin-hero card
   const finRateWrap = document.getElementById('finSavingsRateWrap');
@@ -4240,14 +4258,15 @@ function renderFinancePage() {
 
 function buildFinItem(e) {
   const label = e.type==='income' ? e.source : e.category;
-  const icon = e.type==='income' ? '📈' : getFinCatEmoji(e.category||'Other');
+  const icon = e.isAutoRemittance ? '↔️' : (e.type==='income' ? '📈' : getFinCatEmoji(e.category||'Other'));
+  const transferBadge = e.isAutoRemittance ? `<span style="font-size:9px;background:rgba(109,53,255,0.1);color:var(--accent);border-radius:4px;padding:1px 5px;font-weight:700;margin-left:5px;vertical-align:middle;">TRANSFER</span>` : '';
   return `<div class="fin-item" onclick="openFinDetail('${e.id}')">
-    <div class="fin-icon-box ${e.type}">${icon}</div>
+    <div class="fin-icon-box ${e.type}" style="${e.isAutoRemittance?'background:rgba(109,53,255,0.1);':''}">${icon}</div>
     <div class="fin-item-info">
-      <div class="fin-item-name">${escHtml(label||'—')}</div>
+      <div class="fin-item-name">${escHtml(label||'—')}${transferBadge}</div>
       <div class="fin-item-meta">${fmtDate(e.date)}${e.notes?' · '+escHtml(e.notes).slice(0,28):''}</div>
     </div>
-    <div class="fin-item-amount ${e.type}">${e.type==='income'?'+':'-'}${e.currency} ${fmt(e.amount)}</div>
+    <div class="fin-item-amount ${e.type}" style="${e.isAutoRemittance?'opacity:0.7;':''}">${e.type==='income'?'+':'-'}${e.currency} ${fmt(e.amount)}</div>
   </div>`;
 }
 
@@ -4424,54 +4443,91 @@ function setQuickMode(mode) {
         onmousedown="openAddCategoryFromQE('${mode}')"
         ontouchstart="openAddCategoryFromQE('${mode}')">+ Add</button>`;
 
-    // Touch-friendly reorder: long-press chip, then tap another to swap positions
-    let pressTimer = null, dragSource = null;
+    // ── Reorder: desktop drag + iOS touch drag ──
+    let dragSrc = null;
 
     scroll.querySelectorAll('.qe-cat-chip[data-cat]').forEach(chip => {
-      // Desktop drag
+      // Desktop HTML5 drag
       chip.draggable = true;
-      chip.addEventListener('dragstart', () => { dragSource = chip; chip.style.opacity='0.5'; });
-      chip.addEventListener('dragend', () => { chip.style.opacity=''; _saveCatChipOrder(scroll, mode); dragSource = null; });
-      chip.addEventListener('dragover', e => e.preventDefault());
+      chip.addEventListener('dragstart', () => { dragSrc = chip; chip.style.opacity='0.45'; });
+      chip.addEventListener('dragend',   () => { chip.style.opacity=''; _saveCatChipOrder(scroll, mode); dragSrc = null; });
+      chip.addEventListener('dragover',  e => e.preventDefault());
       chip.addEventListener('drop', e => {
         e.preventDefault();
-        if (dragSource && dragSource !== chip) {
-          const chips = [...scroll.querySelectorAll('.qe-cat-chip[data-cat]')];
-          if (chips.indexOf(dragSource) < chips.indexOf(chip)) chip.after(dragSource);
-          else chip.before(dragSource);
+        if (dragSrc && dragSrc !== chip) {
+          const all = [...scroll.querySelectorAll('.qe-cat-chip[data-cat]')];
+          if (all.indexOf(dragSrc) < all.indexOf(chip)) chip.after(dragSrc);
+          else chip.before(dragSrc);
         }
       });
 
-      // Mobile: long-press to enter "move mode", then tap target to swap
-      chip.addEventListener('touchstart', e => {
-        pressTimer = setTimeout(() => {
-          pressTimer = null;
-          // Enter move mode
-          if (dragSource) { dragSource.style.outline=''; dragSource = null; }
-          dragSource = chip;
-          chip.style.outline = '2px solid var(--accent)';
-          chip.style.opacity = '0.7';
-          // Provide haptic if available
+      // iOS / mobile: real touch-drag using pointer position
+      let touchDragging = false, longPressTimer = null, clone = null;
+
+      chip.addEventListener('touchstart', ev => {
+        const touch = ev.touches[0];
+        longPressTimer = setTimeout(() => {
+          longPressTimer = null;
+          touchDragging = true;
+          dragSrc = chip;
+          chip.style.opacity = '0.4';
           if (navigator.vibrate) navigator.vibrate(40);
-        }, 500);
+
+          // Create a floating clone that follows the finger
+          clone = chip.cloneNode(true);
+          const r = chip.getBoundingClientRect();
+          Object.assign(clone.style, {
+            position:'fixed', left:r.left+'px', top:r.top+'px',
+            width:r.width+'px', height:r.height+'px',
+            pointerEvents:'none', zIndex:'9999',
+            opacity:'0.9', boxShadow:'0 8px 20px rgba(0,0,0,0.25)',
+            transform:'scale(1.05)', transition:'transform 0.1s',
+            borderRadius: getComputedStyle(chip).borderRadius
+          });
+          document.body.appendChild(clone);
+        }, 400);
       }, { passive: true });
 
+      chip.addEventListener('touchmove', ev => {
+        if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
+        if (!touchDragging || !clone) return;
+        ev.preventDefault(); // prevent scroll while dragging
+
+        const touch = ev.touches[0];
+        const r = chip.getBoundingClientRect();
+        clone.style.left = (touch.clientX - r.width/2) + 'px';
+        clone.style.top  = (touch.clientY - r.height/2) + 'px';
+
+        // Find which chip the finger is over and move dragSrc next to it
+        const all = [...scroll.querySelectorAll('.qe-cat-chip[data-cat]')];
+        const target = all.find(c => {
+          if (c === dragSrc) return false;
+          const cr = c.getBoundingClientRect();
+          return touch.clientX >= cr.left && touch.clientX <= cr.right &&
+                 touch.clientY >= cr.top  && touch.clientY <= cr.bottom;
+        });
+        if (target) {
+          const si = all.indexOf(dragSrc), ti = all.indexOf(target);
+          if (si < ti) target.after(dragSrc); else target.before(dragSrc);
+        }
+      }, { passive: false }); // must be non-passive to call preventDefault
+
       chip.addEventListener('touchend', () => {
-        if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; return; }
-        // If in move mode and this is a different chip, swap
-        if (dragSource && dragSource !== chip) {
-          const chips = [...scroll.querySelectorAll('.qe-cat-chip[data-cat]')];
-          const si = chips.indexOf(dragSource), ti = chips.indexOf(chip);
-          if (si > -1 && ti > -1) {
-            if (si < ti) chip.after(dragSource); else chip.before(dragSource);
-            _saveCatChipOrder(scroll, mode);
-          }
-          dragSource.style.outline=''; dragSource.style.opacity=''; dragSource = null;
+        if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
+        if (clone) { clone.remove(); clone = null; }
+        if (touchDragging) {
+          dragSrc.style.opacity = '';
+          _saveCatChipOrder(scroll, mode);
+          touchDragging = false;
+          dragSrc = null;
         }
       }, { passive: true });
 
-      chip.addEventListener('touchmove', () => {
-        if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+      chip.addEventListener('touchcancel', () => {
+        if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
+        if (clone) { clone.remove(); clone = null; }
+        if (dragSrc) { dragSrc.style.opacity = ''; dragSrc = null; }
+        touchDragging = false;
       }, { passive: true });
     });
   }
@@ -4509,7 +4565,22 @@ function openAddCategoryFromQE(qeModeType) {
   document.getElementById('newCatType').value = type;
   document.getElementById('newCatEmoji').value = '';
   document.getElementById('newCatName').value = '';
+  buildCatEmojiPicker();
   openModal('addCategoryModal');
+}
+
+function buildCatEmojiPicker() {
+  const emojis = ['🍔','🛒','🏠','🚗','💊','📱','🎓','✈️','👕','🎮','🐾','💈','🍕','☕','🎁','🌿','💼','📦','🎵','🏥','⚽','🎨','🧴','🐶','🚌','💇'];
+  const picker = document.getElementById('catEmojiPicker');
+  if (!picker) return;
+  picker.innerHTML = emojis.map(em =>
+    `<button type="button" onclick="pickCatEmoji('${em}')"
+      style="background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:5px 9px;font-size:18px;cursor:pointer;line-height:1;">${em}</button>`
+  ).join('');
+}
+
+function pickCatEmoji(em) {
+  document.getElementById('newCatEmoji').value = em;
 }
 
 function qeSelectCat(el, cat) {
@@ -4631,6 +4702,7 @@ function saveQuickEntry() {
         amount: receivedAmount, currency: remCur,
         date: today(),
         notes: `Auto: Remittance received from ${currency} ${fmt(amount)} @ ${exRate}`,
+        isAutoRemittance: true,   // ← flag: exclude from expense/category totals
         createdAt: Date.now() + 1
       });
       saveFinData();
